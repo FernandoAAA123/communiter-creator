@@ -511,8 +511,7 @@ async function deleteBot(id){
   showToast('Bot deleted');
 }
 
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function openModal(id){ document.getElementById(id)?.classList.add('open'); }
 
 // ── BREADS ──
 function loadBreads(){
@@ -809,12 +808,15 @@ function switchPage(name, btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
 }
-function closeModal(){ document.getElementById('edit-modal').classList.remove('open'); editTarget=null; }
-function showToast(msg){ const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),3000); }
+function closeModal(id){
+  if(id){ document.getElementById(id)?.classList.remove('open'); }
+  else { document.getElementById('edit-modal')?.classList.remove('open'); editTarget=null; }
+}
+function showToast(msg){ const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),3000); }
 function genId(){ return Math.random().toString(36).substring(2,10); }
 function cap(s){ return s ? s[0].toUpperCase()+s.slice(1) : ''; }
 
-document.addEventListener('click',e=>{ if(e.target.classList.contains('modal-overlay'))closeModal(); });
+document.addEventListener('click',e=>{ if(e.target.classList.contains('modal-overlay'))closeModal(e.target.id); });
 </script>
 </body>
 </html>
