@@ -155,7 +155,8 @@ input,textarea,select{color-scheme:dark;}
 .bot-name{font-weight:700;color:var(--text-0);font-size:.95rem;}
 .bot-meta{font-size:.75rem;color:var(--text-2);margin-top:2px;}
 .type-badge{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:2px 8px;font-size:.65rem;font-weight:700;border:1px solid;margin-left:6px;}
-.type-search{color:var(--blue);border-color:rgba(59,130,246,.25);background:rgba(59,130,246,.08);}
+.type-peterdex{color:var(--accent-g);border-color:rgba(124,58,237,.25);background:rgba(124,58,237,.08);}
+.type-pandex{color:var(--orange);border-color:rgba(249,115,22,.25);background:rgba(249,115,22,.08);}
 .type-welcome{color:var(--green);border-color:rgba(16,185,129,.25);background:rgba(16,185,129,.08);}
 .status-pill{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;color:var(--text-2);}
 .status-dot{width:7px;height:7px;border-radius:50%;background:var(--text-3);}
@@ -351,14 +352,6 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 15h.01M16 15h.01"/></svg>
         Registro de bots
       </button>
-      <button class="nav-item" id="nav-admin-breaddex" onclick="switchSection('admin-breaddex',this)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
-        BreadDex
-      </button>
-      <button class="nav-item" id="nav-admin-guydex" onclick="switchSection('admin-guydex',this)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-        GuyDex
-      </button>
       <button class="nav-item" id="nav-admin-captures" onclick="switchSection('admin-captures',this)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
         Capturas
@@ -408,43 +401,118 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
         </button>
         <div class="section-header"><div class="section-header-text"><h2>¿Qué tipo de bot?</h2></div></div>
         <div class="type-grid">
-          <div class="type-card" onclick="startCreate('search')">
-            <div class="tc-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-            <h3>Bot de búsqueda</h3>
-            <p>Responde a <code>/search</code> e <code>/img</code> con resultados de Google.</p>
-          </div>
           <div class="type-card" onclick="startCreate('welcome')">
             <div class="tc-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
             <h3>Bot de bienvenida</h3>
             <p>Saluda automáticamente a cada nuevo miembro que se une al servidor.</p>
           </div>
+          <div class="type-card admin-only-card" id="type-card-peterdex" style="display:none;" onclick="startCreate('peterdex')">
+            <div class="tc-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+            <h3>PeterDex <span class="admin-badge" style="margin-left:4px;">Solo admin</span></h3>
+            <p>Bot de colección de personajes (GuyDex). Se ejecuta desde peterdex.html.</p>
+          </div>
+          <div class="type-card admin-only-card" id="type-card-pandex" style="display:none;" onclick="startCreate('pandex')">
+            <div class="tc-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div>
+            <h3>PanDex <span class="admin-badge" style="margin-left:4px;">Solo admin</span></h3>
+            <p>Bot de colección de panes (BreadDex). Se ejecuta desde pandex.html.</p>
+          </div>
         </div>
       </div>
 
-      <!-- PAGE: CREAR/EDITAR BOT BÚSQUEDA -->
-      <div class="page" id="page-edit-search">
+      <!-- PAGE: CREAR/EDITAR BOT PETERDEX (GUYDEX) -->
+      <div class="page" id="page-edit-peterdex">
         <button class="back-link" onclick="showPage('type-picker')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Volver
         </button>
         <div class="form-box">
-          <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Bot de búsqueda</h3>
-          <div class="sub">Responde a <code>/search consulta</code> con resultados web y a <code>/img consulta</code> con imágenes.</div>
-          <div class="form-group"><label>Nombre del bot *</label><input type="text" id="s-name" placeholder="BuscaBot"></div>
-          <div class="form-group"><label>Avatar (URL, opcional)</label><input type="url" id="s-avatar" placeholder="https://..."></div>
-          <div class="form-group"><label>Color</label><input type="color" id="s-color" value="#3b82f6" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
-          <details class="collapsible" open>
-            <summary><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Credenciales de Google Custom Search (gratis, 100 búsquedas/día)</summary>
-            <div class="collapsible-body">
-              <div class="form-group"><label>API Key *</label><input type="text" id="s-apikey" placeholder="AIza..."><div class="form-hint">En <a href="https://console.cloud.google.com/apis/credentials" target="_blank">console.cloud.google.com</a> → Crear credenciales → Clave de API. Luego activa "Custom Search API".</div></div>
-              <div class="form-group"><label>Search Engine ID (cx) *</label><input type="text" id="s-cx" placeholder="a1b2c3..."><div class="form-hint">En <a href="https://programmablesearchengine.google.com/controlpanel/all" target="_blank">programmablesearchengine.google.com</a> → Agregar → activa "Buscar en toda la web".</div></div>
-            </div>
-          </details>
-          <div class="form-group"><label>¿En qué comunidades?</label><div class="server-pick" id="s-servers"></div><div class="form-hint">Solo aparecen comunidades donde eres dueño o admin.</div></div>
+          <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg> PeterDex (GuyDex)</h3>
+          <div class="sub">Bot independiente que corre desde <code>peterdex.html</code>. Activar/desactivar por comunidad y canal se hace desde ese archivo — aquí solo administras su identidad y el catálogo de personajes.</div>
+          <div class="form-group"><label>Nombre del bot *</label><input type="text" id="pd-name" placeholder="PeterDex"></div>
+          <div class="form-group"><label>Avatar (URL, opcional)</label><input type="url" id="pd-avatar" placeholder="https://..."></div>
+          <div class="form-group"><label>Color</label><input type="color" id="pd-color" value="#7c3aed" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
           <div class="form-actions">
-            <button class="btn btn-primary" onclick="saveBot('search')">Guardar bot</button>
+            <button class="btn btn-primary" onclick="saveBot('peterdex')">Guardar bot</button>
             <button class="btn btn-ghost" onclick="showPage('list')">Cancelar</button>
           </div>
         </div>
+
+        <div class="form-box" style="margin-top:16px;">
+          <h3>Agregar nuevo personaje</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Nombre *</label><input type="text" class="fi" id="g-name" placeholder="Peter Griffin"></div>
+            <div class="form-group"><label>Rareza *</label>
+              <select class="fi" id="g-rarity">
+                <option value="common">○ Common</option><option value="uncommon">◉ Uncommon</option>
+                <option value="rare">◈ Rare</option><option value="epic">◆ Epic</option><option value="legendary">★ Legendary</option>
+              </select>
+            </div>
+            <div class="form-group full"><label>Descripción</label><textarea class="fi" id="g-desc" placeholder="Personaje principal de Family Guy..."></textarea></div>
+            <div class="form-group full"><label>Frase famosa</label><input type="text" class="fi" id="g-quote" placeholder="Giggity!"></div>
+            <div class="form-group full"><label>URL de imagen</label><input type="url" class="fi" id="g-img" placeholder="https://..." oninput="previewImg('g-img','g-preview')"><div class="img-preview" id="g-preview" style="margin-top:8px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div></div>
+            <div class="form-group"><label>Primera aparición</label><input type="text" class="fi" id="g-episode" placeholder="S1E1 Death Has a Shadow"></div>
+            <div class="form-group"><label>Peso de aparición (1-100)</label><input type="number" class="fi" id="g-weight" min="1" max="100" value="60"></div>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:10px;">
+            <button class="btn btn-primary" onclick="addGuy()">+ Agregar personaje</button>
+            <button class="btn btn-ghost" onclick="clearGuyForm()">Limpiar</button>
+          </div>
+        </div>
+        <div class="section-header" style="margin-top:8px;">
+          <div><h2 style="font-size:1.05rem;">Base de datos — GuyDex</h2></div>
+          <span class="count-badge" id="guy-count">0 personajes</span>
+        </div>
+        <div style="margin-bottom:12px;">
+          <input type="text" placeholder="Buscar personajes..." oninput="filterCards('guy',this.value)" style="background:var(--bg-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 14px;color:var(--text-0);font-family:var(--font);font-size:.875rem;outline:none;width:260px;">
+        </div>
+        <div class="cards-grid" id="guy-grid"></div>
+      </div>
+
+      <!-- PAGE: CREAR/EDITAR BOT PANDEX (BREADDEX) -->
+      <div class="page" id="page-edit-pandex">
+        <button class="back-link" onclick="showPage('type-picker')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Volver
+        </button>
+        <div class="form-box">
+          <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg> PanDex (BreadDex)</h3>
+          <div class="sub">Bot independiente que corre desde <code>pandex.html</code>. Activar/desactivar por comunidad y canal se hace desde ese archivo — aquí solo administras su identidad y el catálogo de panes.</div>
+          <div class="form-group"><label>Nombre del bot *</label><input type="text" id="pn-name" placeholder="PanDex"></div>
+          <div class="form-group"><label>Avatar (URL, opcional)</label><input type="url" id="pn-avatar" placeholder="https://..."></div>
+          <div class="form-group"><label>Color</label><input type="color" id="pn-color" value="#f97316" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="saveBot('pandex')">Guardar bot</button>
+            <button class="btn btn-ghost" onclick="showPage('list')">Cancelar</button>
+          </div>
+        </div>
+
+        <div class="form-box" style="margin-top:16px;">
+          <h3>Agregar nuevo pan</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Nombre *</label><input type="text" class="fi" id="b-name" placeholder="Breadstix"></div>
+            <div class="form-group"><label>Rareza *</label>
+              <select class="fi" id="b-rarity">
+                <option value="common">○ Common</option><option value="uncommon">◉ Uncommon</option>
+                <option value="rare">◈ Rare</option><option value="epic">◆ Epic</option><option value="legendary">★ Legendary</option>
+              </select>
+            </div>
+            <div class="form-group full"><label>Alias aceptados (separados por coma) *</label><input type="text" class="fi" id="b-aliases" placeholder="breadstix, bread stix, bstix"><span class="form-hint">El bot aceptará cualquiera de estos como respuesta correcta.</span></div>
+            <div class="form-group full"><label>Descripción</label><textarea class="fi" id="b-desc" placeholder="Un pan clásico de Breadwinners..."></textarea></div>
+            <div class="form-group full"><label>URL de imagen</label><input type="url" class="fi" id="b-img" placeholder="https://..." oninput="previewImg('b-img','b-preview')"><div class="img-preview" id="b-preview" style="margin-top:8px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.5"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div></div>
+            <div class="form-group"><label>Episodio de origen</label><input type="text" class="fi" id="b-episode" placeholder="Pilot, S1E1..."></div>
+            <div class="form-group"><label>Tasa de captura (1-100)</label><input type="number" class="fi" id="b-catchrate" min="1" max="100" value="70"></div>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:10px;">
+            <button class="btn btn-primary" onclick="addBread()">+ Agregar pan</button>
+            <button class="btn btn-ghost" onclick="clearBreadForm()">Limpiar</button>
+          </div>
+        </div>
+        <div class="section-header" style="margin-top:8px;">
+          <div><h2 style="font-size:1.05rem;">Base de datos — BreadDex</h2></div>
+          <span class="count-badge" id="bread-count">0 panes</span>
+        </div>
+        <div style="margin-bottom:12px;">
+          <input type="text" placeholder="Buscar panes..." oninput="filterCards('bread',this.value)" style="background:var(--bg-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 14px;color:var(--text-0);font-family:var(--font);font-size:.875rem;outline:none;width:260px;">
+        </div>
+        <div class="cards-grid" id="bread-grid"></div>
       </div>
 
       <!-- PAGE: CREAR/EDITAR BOT BIENVENIDA -->
@@ -521,76 +589,6 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
         <button class="btn btn-primary btn-sm" onclick="openAddBotAdminModal()">+ Agregar bot</button>
       </div>
       <div id="admin-bots-list" style="display:flex;flex-direction:column;gap:10px;"></div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         SECCIÓN: ADMIN — BREADDEX
-    ══════════════════════════════════════════ -->
-    <div class="section" id="sec-admin-breaddex">
-      <div class="form-box">
-        <h3>Agregar nuevo pan</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>Nombre *</label><input type="text" class="fi" id="b-name" placeholder="Breadstix"></div>
-          <div class="form-group"><label>Rareza *</label>
-            <select class="fi" id="b-rarity">
-              <option value="common">○ Common</option><option value="uncommon">◉ Uncommon</option>
-              <option value="rare">◈ Rare</option><option value="epic">◆ Epic</option><option value="legendary">★ Legendary</option>
-            </select>
-          </div>
-          <div class="form-group full"><label>Alias aceptados (separados por coma) *</label><input type="text" class="fi" id="b-aliases" placeholder="breadstix, bread stix, bstix"><span class="form-hint">El bot aceptará cualquiera de estos como respuesta correcta.</span></div>
-          <div class="form-group full"><label>Descripción</label><textarea class="fi" id="b-desc" placeholder="Un pan clásico de Breadwinners..."></textarea></div>
-          <div class="form-group full"><label>URL de imagen</label><input type="url" class="fi" id="b-img" placeholder="https://..." oninput="previewImg('b-img','b-preview')"><div class="img-preview" id="b-preview" style="margin-top:8px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.5"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div></div>
-          <div class="form-group"><label>Episodio de origen</label><input type="text" class="fi" id="b-episode" placeholder="Pilot, S1E1..."></div>
-          <div class="form-group"><label>Tasa de captura (1-100)</label><input type="number" class="fi" id="b-catchrate" min="1" max="100" value="70"></div>
-        </div>
-        <div style="margin-top:16px;display:flex;gap:10px;">
-          <button class="btn btn-primary" onclick="addBread()">+ Agregar pan</button>
-          <button class="btn btn-ghost" onclick="clearBreadForm()">Limpiar</button>
-        </div>
-      </div>
-      <div class="section-header" style="margin-top:8px;">
-        <div><h2 style="font-size:1.05rem;">Base de datos — BreadDex</h2></div>
-        <span class="count-badge" id="bread-count">0 panes</span>
-      </div>
-      <div style="margin-bottom:12px;">
-        <input type="text" placeholder="Buscar panes..." oninput="filterCards('bread',this.value)" style="background:var(--bg-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 14px;color:var(--text-0);font-family:var(--font);font-size:.875rem;outline:none;width:260px;">
-      </div>
-      <div class="cards-grid" id="bread-grid"></div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
-         SECCIÓN: ADMIN — GUYDEX
-    ══════════════════════════════════════════ -->
-    <div class="section" id="sec-admin-guydex">
-      <div class="form-box">
-        <h3>Agregar nuevo personaje</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>Nombre *</label><input type="text" class="fi" id="g-name" placeholder="Peter Griffin"></div>
-          <div class="form-group"><label>Rareza *</label>
-            <select class="fi" id="g-rarity">
-              <option value="common">○ Common</option><option value="uncommon">◉ Uncommon</option>
-              <option value="rare">◈ Rare</option><option value="epic">◆ Epic</option><option value="legendary">★ Legendary</option>
-            </select>
-          </div>
-          <div class="form-group full"><label>Descripción</label><textarea class="fi" id="g-desc" placeholder="Personaje principal de Family Guy..."></textarea></div>
-          <div class="form-group full"><label>Frase famosa</label><input type="text" class="fi" id="g-quote" placeholder="Giggity!"></div>
-          <div class="form-group full"><label>URL de imagen</label><input type="url" class="fi" id="g-img" placeholder="https://..." oninput="previewImg('g-img','g-preview')"><div class="img-preview" id="g-preview" style="margin-top:8px;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div></div>
-          <div class="form-group"><label>Primera aparición</label><input type="text" class="fi" id="g-episode" placeholder="S1E1 Death Has a Shadow"></div>
-          <div class="form-group"><label>Peso de aparición (1-100)</label><input type="number" class="fi" id="g-weight" min="1" max="100" value="60"></div>
-        </div>
-        <div style="margin-top:16px;display:flex;gap:10px;">
-          <button class="btn btn-primary" onclick="addGuy()">+ Agregar personaje</button>
-          <button class="btn btn-ghost" onclick="clearGuyForm()">Limpiar</button>
-        </div>
-      </div>
-      <div class="section-header" style="margin-top:8px;">
-        <div><h2 style="font-size:1.05rem;">Base de datos — GuyDex</h2></div>
-        <span class="count-badge" id="guy-count">0 personajes</span>
-      </div>
-      <div style="margin-bottom:12px;">
-        <input type="text" placeholder="Buscar personajes..." oninput="filterCards('guy',this.value)" style="background:var(--bg-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 14px;color:var(--text-0);font-family:var(--font);font-size:.875rem;outline:none;width:260px;">
-      </div>
-      <div class="cards-grid" id="guy-grid"></div>
     </div>
 
     <!-- ══════════════════════════════════════════
@@ -686,6 +684,8 @@ document.addEventListener('firebase-ready', ()=>{
     isAdmin = (user.uid === ADMIN_UID);
     if(isAdmin){
       document.getElementById('admin-only-indicator').style.display='';
+      document.getElementById('type-card-peterdex').style.display='';
+      document.getElementById('type-card-pandex').style.display='';
       loadAll(); // carga datos admin
     }
     await loadMyServers();
@@ -737,26 +737,33 @@ function renderMyBots(){
     el.innerHTML = `<div class="empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 15h.01M16 15h.01"/></svg><p>Aún no has creado ningún bot.<br>Haz clic en "Crear bot" para empezar.</p></div>`;
     return;
   }
+  const typeLabels={welcome:'Bienvenida',peterdex:'PeterDex',pandex:'PanDex'};
+  const standalone={peterdex:1,pandex:1}; // se ejecutan desde su propio archivo .html
   el.innerHTML = myBots.map(b=>`
     <div class="bot-card">
       <div class="bot-ava" style="background:${b.avatarColor||'#7c3aed'};">${b.avatarUrl?`<img src="${b.avatarUrl}">`:(b.name||'B')[0].toUpperCase()}</div>
       <div style="flex:1;min-width:0;">
-        <div class="bot-name">${b.name}<span class="type-badge type-${b.type}">${b.type==='search'?'Búsqueda':'Bienvenida'}</span></div>
-        <div class="bot-meta">${(b.installedServers||[]).length} comunidad${(b.installedServers||[]).length===1?'':'es'} activa${(b.installedServers||[]).length===1?'':'s'}</div>
+        <div class="bot-name">${b.name}<span class="type-badge type-${b.type}">${typeLabels[b.type]||b.type}</span></div>
+        <div class="bot-meta">${standalone[b.type]?'Se ejecuta desde '+b.type+'.html':(b.installedServers||[]).length+' comunidad'+((b.installedServers||[]).length===1?'':'es')+' activa'+((b.installedServers||[]).length===1?'':'s')}</div>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="editBot('${b.uid}')">Editar</button>
-      <button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')">▶ Activar</button>
+      ${standalone[b.type]?'':`<button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')">▶ Activar</button>`}
       <button class="btn btn-danger btn-sm" onclick="deleteBotMaker('${b.uid}')">Eliminar</button>
     </div>`).join('');
 }
 
 function startCreate(type){
   editingBotId=null;currentEditType=type;selectedServers=new Set();welcomeChannelChoice={};
-  if(type==='search'){
-    ['s-name','s-avatar','s-apikey','s-cx'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('s-color').value='#3b82f6';
-    renderServerPicker('s-servers','s');
-    showPage('edit-search');
+  if(type==='peterdex'){
+    ['pd-name','pd-avatar'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pd-name').value='PeterDex';
+    document.getElementById('pd-color').value='#7c3aed';
+    showPage('edit-peterdex');
+  } else if(type==='pandex'){
+    ['pn-name','pn-avatar'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pn-name').value='PanDex';
+    document.getElementById('pn-color').value='#f97316';
+    showPage('edit-pandex');
   } else {
     ['w-name','w-avatar'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('w-color').value='#10b981';
@@ -771,13 +778,16 @@ function editBot(id){
   const b=myBots.find(x=>x.uid===id);if(!b)return;
   editingBotId=id;currentEditType=b.type;
   selectedServers=new Set(b.installedServers||[]);
-  if(b.type==='search'){
-    document.getElementById('s-name').value=b.name||'';
-    document.getElementById('s-avatar').value=b.avatarUrl||'';
-    document.getElementById('s-color').value=b.avatarColor||'#3b82f6';
-    document.getElementById('s-apikey').value=b.searchApiKey||'';
-    document.getElementById('s-cx').value=b.searchEngineId||'';
-    renderServerPicker('s-servers','s');showPage('edit-search');
+  if(b.type==='peterdex'){
+    document.getElementById('pd-name').value=b.name||'PeterDex';
+    document.getElementById('pd-avatar').value=b.avatarUrl||'';
+    document.getElementById('pd-color').value=b.avatarColor||'#7c3aed';
+    showPage('edit-peterdex');
+  } else if(b.type==='pandex'){
+    document.getElementById('pn-name').value=b.name||'PanDex';
+    document.getElementById('pn-avatar').value=b.avatarUrl||'';
+    document.getElementById('pn-color').value=b.avatarColor||'#f97316';
+    showPage('edit-pandex');
   } else {
     document.getElementById('w-name').value=b.name||'';
     document.getElementById('w-avatar').value=b.avatarUrl||'';
@@ -796,8 +806,7 @@ function renderServerPicker(elId, prefix){
 
 function toggleServerChip(srvId,prefix){
   if(selectedServers.has(srvId))selectedServers.delete(srvId);else selectedServers.add(srvId);
-  if(prefix==='s')renderServerPicker('s-servers','s');
-  else if(prefix==='w'){renderServerPicker('w-servers','w');renderWelcomeChannelPickers();}
+  if(prefix==='w'){renderServerPicker('w-servers','w');renderWelcomeChannelPickers();}
 }
 
 function getAllChannelsOf(srv){
@@ -823,22 +832,19 @@ function renderWelcomeChannelPickers(){
 }
 
 async function saveBot(type){
-  if(type==='search'){
-    const name=document.getElementById('s-name').value.trim();
-    const apiKey=document.getElementById('s-apikey').value.trim();
-    const cx=document.getElementById('s-cx').value.trim();
-    if(!name){showToast('⚠️ Ponle un nombre al bot');return;}
-    if(!apiKey||!cx){showToast('⚠️ Faltan las credenciales de Google Custom Search');return;}
-    const id=editingBotId||('bot_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+genId(5));
-    const bot={uid:id,name,type:'search',ownerId:window._currentUid,
-      avatarUrl:document.getElementById('s-avatar').value.trim(),
-      avatarColor:document.getElementById('s-color').value,
-      description:'Bot de búsqueda — /search e /img',
-      botCommands:['/search consulta — Buscar en la web','/img consulta — Buscar una imagen'],
-      searchApiKey:apiKey,searchEngineId:cx,installedServers:[...selectedServers]};
+  if(type==='peterdex'||type==='pandex'){
+    if(!isAdmin){showToast('⚠️ Solo el admin puede crear este bot');return;}
+    const prefix=type==='peterdex'?'pd':'pn';
+    const name=document.getElementById(prefix+'-name').value.trim()||(type==='peterdex'?'PeterDex':'PanDex');
+    const id='bot_'+type; // singleton: coincide con el uid que usa peterdex.html/pandex.html
+    const bot={uid:id,name,type,ownerId:window._currentUid,builtin:true,
+      avatarUrl:document.getElementById(prefix+'-avatar').value.trim(),
+      avatarColor:document.getElementById(prefix+'-color').value,
+      description:type==='peterdex'?'Bot de colección de personajes (GuyDex)':'Bot de colección de panes (BreadDex)',
+      botCommands:type==='peterdex'?['/catch — Atrapar el personaje actual','/guydex — Ver tu colección']:['/mine — Descubrir un pan misterioso','/breaddex — Ver tu colección']};
     await fbSet('botdata/bots/'+id,bot);
     showToast('✅ Bot guardado');showPage('list');
-  } else {
+  } else if(type==='welcome'){
     const name=document.getElementById('w-name').value.trim();
     const message=document.getElementById('w-message').value.trim();
     if(!name){showToast('⚠️ Ponle un nombre al bot');return;}
@@ -886,80 +892,10 @@ async function runBot(id){
   document.getElementById('run-name').textContent=bot.name;
   document.getElementById('run-log').innerHTML='';
   showPage('run');
-  addLog('system',`${bot.name} iniciado (${bot.type==='search'?'Bot de búsqueda':'Bot de bienvenida'}).`);
+  addLog('system',`${bot.name} iniciado (Bot de bienvenida).`);
   await fbSet('presence/'+bot.uid,{uid:bot.uid,name:bot.name,status:'online',ts:Date.now()});
   window.addEventListener('beforeunload',_beforeUnloadHandler);
-  if(bot.type==='search')startSearchBot(bot);
-  else startWelcomeBot(bot);
-}
-
-function startSearchBot(bot){
-  const channelsListened=new Set();
-  fbOn('state/servers',snap=>{
-    if(!snap.exists())return;
-    const val=snap.val();
-    const servers=Array.isArray(val)?val:Object.values(val||{});
-    servers.forEach(srv=>{
-      if(!bot.installedServers.includes(srv.id))return;
-      (srv.channels||[]).forEach(cat=>(cat.children||[]).forEach(ch=>{
-        if(ch.type==='text'&&!channelsListened.has(ch.id)){
-          channelsListened.add(ch.id);
-          listenSearchChannel(bot,ch.id);
-          addLog('info',`Escuchando #${ch.name}`);
-        }
-      }));
-    });
-  });
-  runningListeners.push(()=>{});
-}
-
-function listenSearchChannel(bot,channelId){
-  let firstLoad=true;
-  fbOnChild('state/messages/'+channelId,snap=>{
-    if(firstLoad){firstLoad=false;return;}
-    const msg=snap.val();if(!msg||!msg.content)return;
-    if((msg.uid||'').startsWith('bot_'))return;
-    const text=msg.content.trim();
-    if(/^\/search\s+/i.test(text)){const q=text.replace(/^\/search\s+/i,'').trim();if(q)handleSearch(bot,channelId,msg,q);}
-    else if(/^\/img\s+/i.test(text)){const q=text.replace(/^\/img\s+/i,'').trim();if(q)handleImgSearch(bot,channelId,msg,q);}
-  });
-}
-
-async function googleSearch(bot,query,searchType){
-  const params=new URLSearchParams({key:bot.searchApiKey,cx:bot.searchEngineId,q:query,num:'5'});
-  if(searchType==='image')params.set('searchType','image');
-  const res=await fetch('https://www.googleapis.com/customsearch/v1?'+params.toString());
-  if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err?.error?.message||('HTTP '+res.status));}
-  return res.json();
-}
-
-async function handleSearch(bot,channelId,msg,query){
-  addLog('info',`${msg.name} pidió /search "${query}"`);
-  try{
-    const data=await googleSearch(bot,query,'web');const items=data.items||[];
-    if(!items.length){await sendBotMsg(bot,channelId,`No encontré resultados para **${query}**.`);return;}
-    let text=`🔎 Resultados para **${query}**:\n\n`;
-    items.slice(0,4).forEach(it=>{text+=`**${it.title}**\n${it.link}\n\n`;});
-    await sendBotMsg(bot,channelId,text.trim());
-    addLog('success',`Respondido /search "${query}" (${items.length} resultados)`);
-  }catch(e){
-    await sendBotMsg(bot,channelId,'⚠️ No pude completar la búsqueda. Revisa la API key del bot.');
-    addLog('error',`Error en /search: ${e.message}`);
-  }
-}
-
-async function handleImgSearch(bot,channelId,msg,query){
-  addLog('info',`${msg.name} pidió /img "${query}"`);
-  try{
-    const data=await googleSearch(bot,query,'image');const items=data.items||[];
-    if(!items.length){await sendBotMsg(bot,channelId,`No encontré imágenes para **${query}**.`);return;}
-    const pick=items[Math.floor(Math.random()*Math.min(items.length,5))];
-    await sendBotImg(bot,channelId,pick.link,query);
-    addLog('success',`Respondido /img "${query}"`);
-  }catch(e){
-    await sendBotMsg(bot,channelId,'⚠️ No pude buscar la imagen. Revisa la API key del bot.');
-    addLog('error',`Error en /img: ${e.message}`);
-  }
+  startWelcomeBot(bot);
 }
 
 function startWelcomeBot(bot){
@@ -989,11 +925,6 @@ async function sendBotMsg(bot,channelId,content){
   if(!channelId)return;
   const id='msg'+genId(12);
   await fbSet('state/messages/'+channelId+'/'+id,{id,uid:bot.uid,name:bot.name,color:bot.avatarColor||'#7c3aed',avatarUrl:bot.avatarUrl||'',content,ts:Date.now(),reactions:[],pinned:false,edited:false});
-}
-async function sendBotImg(bot,channelId,imageUrl,caption){
-  if(!channelId)return;
-  const id='msg'+genId(12);
-  await fbSet('state/messages/'+channelId+'/'+id,{id,uid:bot.uid,name:bot.name,color:bot.avatarColor||'#7c3aed',avatarUrl:bot.avatarUrl||'',content:caption?`🖼️ **${caption}**`:'',imageUrl,ts:Date.now(),reactions:[],pinned:false,edited:false});
 }
 
 // ══════════════════════════════════════════
