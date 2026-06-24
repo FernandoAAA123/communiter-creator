@@ -422,23 +422,13 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
             <p>Busca imagenes, paginas web o videos de YouTube con /img, /search y /yt.</p>
           </div>
         </div>
-        <div style="margin-bottom:8px;"><span style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);">Modulos adicionales</span></div>
-        <div style="font-size:.78rem;color:var(--text-2);margin-bottom:12px;">Bots con mecanicas avanzadas que se abren como herramientas independientes en una nueva pestana.</div>
+        <div style="margin-bottom:8px;"><span style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);">Adicionales</span></div>
+        <div style="font-size:.78rem;color:var(--text-2);margin-bottom:12px;">Registra un bot ya construido subiendo su archivo HTML o pegando su URL pública.</div>
         <div class="type-grid">
-          <div class="type-card" onclick="openModule('fight')" style="border-color:rgba(245,158,11,.2);">
-            <div class="tc-icon" style="color:#f59e0b;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-            <h3>Dex Fight-Catch <span style="font-size:.68rem;font-weight:700;color:#f59e0b;background:rgba(245,158,11,.1);border-radius:4px;padding:1px 5px;">MODULO</span></h3>
-            <p>Spawn competitivo - 30s para ser el primero en /catch [nombre] correcto.</p>
-          </div>
-          <div class="type-card" onclick="openModule('mine')" style="border-color:rgba(167,139,250,.2);">
-            <div class="tc-icon" style="color:#a78bfa;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-            <h3>Dex Mine <span style="font-size:.68rem;font-weight:700;color:#a78bfa;background:rgba(167,139,250,.1);border-radius:4px;padding:1px 5px;">MODULO</span></h3>
-            <p>Nombre oculto - 1 minuto para adivinar con /mine [nombre]. El primero gana.</p>
-          </div>
           <div class="type-card" onclick="startCreate('external')" style="border-color:rgba(59,130,246,.2);">
             <div class="tc-icon" style="color:#3b82f6;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
-            <h3>Bot personalizado <span style="font-size:.68rem;font-weight:700;color:#3b82f6;background:rgba(59,130,246,.1);border-radius:4px;padding:1px 5px;">URL</span></h3>
-            <p>Registra un bot externo pegando su URL. Se abrira en nueva pestana al activarse.</p>
+            <h3>Bot personalizado <span style="font-size:.68rem;font-weight:700;color:#3b82f6;background:rgba(59,130,246,.1);border-radius:4px;padding:1px 5px;">ARCHIVO / URL</span></h3>
+            <p>Sube el archivo HTML del bot o pega su URL. Se abrirá en nueva pestaña al activarse.</p>
           </div>
         </div>
       </div>
@@ -470,10 +460,26 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Volver
         </button>
         <div class="form-box">
-          <h3 style="color:#3b82f6;">Bot personalizado por URL</h3>
-          <div class="sub">Registra un bot externo ya existente. Al activarlo se abrira en una nueva pestana.</div>
+          <h3 style="color:#3b82f6;">Bot personalizado</h3>
+          <div class="sub">Registra un bot ya existente subiendo su archivo HTML o pegando su URL pública. Al activarlo se abrirá en una nueva pestaña.</div>
+          <div class="form-group">
+            <label>Origen del bot *</label>
+            <div class="tab-bar" style="margin-bottom:0;">
+              <button type="button" class="tab-btn active" id="ex-mode-file" onclick="setExternalMode('file')">📄 Archivo</button>
+              <button type="button" class="tab-btn" id="ex-mode-url" onclick="setExternalMode('url')">🔗 URL</button>
+            </div>
+          </div>
+          <div class="form-group" id="ex-file-group">
+            <label>Archivo HTML del bot *</label>
+            <input type="file" id="ex-file" accept=".html,.htm,text/html" class="fi" onchange="handleExternalFile(event)">
+            <div class="form-hint" id="ex-file-status">Selecciona el archivo .html del bot.</div>
+          </div>
+          <div class="form-group" id="ex-url-group" style="display:none;">
+            <label>URL del bot *</label>
+            <input type="url" id="ex-url" placeholder="https://tu-usuario.github.io/pandex.html" class="fi">
+            <div class="form-hint">URL pública del archivo HTML del bot.</div>
+          </div>
           <div class="form-group"><label>Nombre del bot *</label><input type="text" id="ex-name" placeholder="PanDex" class="fi"></div>
-          <div class="form-group"><label>URL del bot *</label><input type="url" id="ex-url" placeholder="https://tu-usuario.github.io/pandex.html" class="fi"><div class="form-hint">URL publica del archivo HTML del bot.</div></div>
           <div class="form-group"><label>Avatar (URL, opcional)</label><input type="url" id="ex-avatar" placeholder="https://..." class="fi"></div>
           <div class="form-group"><label>Color</label><input type="color" id="ex-color" value="#3b82f6" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
           <div class="form-group"><label>Descripcion (opcional)</label><textarea id="ex-desc" class="fi" rows="2"></textarea></div>
@@ -656,6 +662,8 @@ const RARITY_ICONS  = {common:'○',uncommon:'◉',rare:'◈',epic:'◆',legenda
 let myBots = [], myServers = [];
 let currentEditType = null, editingBotId = null;
 let selectedServers = new Set(), welcomeChannelChoice = {};
+let externalMode = 'file'; // 'file' | 'url'
+let currentExternalFile = null; // {name, content} cuando se sube un archivo HTML
 let runningBot = null, runningListeners = [], lastKnownMembers = {};
 
 // ── ADMIN STATE ──
@@ -750,8 +758,6 @@ async function loadMyServers(){
 // Tipos de bot conocidos — cualquier tipo nuevo sólo necesita añadirse aquí
 const BOT_TYPES = ['welcome','dex','search','external'];
 
-const MODULE_URLS = {fight:'dex-fight-module.html', mine:'dex-mine-module.html'};
-function openModule(type){ window.open(MODULE_URLS[type]||'#','_blank'); }
 // Datos de tipos huérfanos detectados al cargar (type -> count)
 let orphanedData = {};
 
@@ -791,12 +797,12 @@ function renderMyBots(){
     const badgeCls=customColor?'':'type-'+(b.type==='dex'?'dex':'welcome');
     const badgeStyle=customColor?`style="color:${customColor};border-color:${customColor}33;background:${customColor}11;"`:'';
     const meta=b.type==='external'
-      ?`<a href="${b.externalUrl||'#'}" target="_blank" style="color:#3b82f6;font-size:.75rem;">${b.externalUrl||'Sin URL'}</a>`
+      ?(b.fileContent?`📄 ${b.fileName||'archivo.html'} <span style="color:var(--text-3);">(subido)</span>`:`<a href="${b.externalUrl||'#'}" target="_blank" style="color:#3b82f6;font-size:.75rem;">${b.externalUrl||'Sin URL'}</a>`)
       :b.type==='search'
         ?`Comandos: ${b.imgCmd||'/img'} · ${b.searchCmd||'/search'} · ${b.ytCmd||'/yt'}`
         :`${(b.installedServers||[]).length} comunidad${(b.installedServers||[]).length===1?'':'es'} activa${(b.installedServers||[]).length===1?'':'s'}${b.type==='dex'?' · '+(b.items||[]).length+' elementos':''}`;
     const actionBtn=b.type==='external'
-      ?`<button class="btn btn-primary btn-sm" onclick="window.open('${b.externalUrl||'#'}','_blank')">↗ Abrir</button>`
+      ?`<button class="btn btn-primary btn-sm" onclick="openExternalBot('${b.uid}')">↗ Abrir</button>`
       :`<button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')">▶ Activar</button>`;
     return `<div class="bot-card">
       <div class="bot-ava" style="background:${b.avatarColor||'#7c3aed'};">${b.avatarUrl?`<img src="${b.avatarUrl}">`:(b.name||'B')[0].toUpperCase()}</div>
@@ -848,6 +854,10 @@ function startCreate(type){
   } else if(type==='external'){
     ['ex-name','ex-url','ex-avatar','ex-desc','ex-cmds'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('ex-color').value='#3b82f6';
+    document.getElementById('ex-file').value='';
+    currentExternalFile=null;
+    document.getElementById('ex-file-status').textContent='Selecciona el archivo .html del bot.';
+    setExternalMode('file');
     showPage('edit-external');
   }
 }
@@ -892,11 +902,22 @@ function editBot(id){
     showPage('edit-search');
   } else if(b.type==='external'){
     document.getElementById('ex-name').value=b.name||'';
-    document.getElementById('ex-url').value=b.externalUrl||'';
     document.getElementById('ex-avatar').value=b.avatarUrl||'';
     document.getElementById('ex-color').value=b.avatarColor||'#3b82f6';
     document.getElementById('ex-desc').value=b.description||'';
     document.getElementById('ex-cmds').value=(b.botCommands||[]).join('\n');
+    document.getElementById('ex-file').value='';
+    if(b.fileContent){
+      currentExternalFile={name:b.fileName||'bot.html',content:b.fileContent};
+      document.getElementById('ex-url').value='';
+      setExternalMode('file');
+      document.getElementById('ex-file-status').innerHTML=`<span style="color:var(--green)">✅ ${b.fileName||'bot.html'} (guardado)</span> — sube otro archivo para reemplazarlo.`;
+    } else {
+      currentExternalFile=null;
+      document.getElementById('ex-url').value=b.externalUrl||'';
+      setExternalMode('url');
+      document.getElementById('ex-file-status').textContent='Selecciona el archivo .html del bot.';
+    }
     showPage('edit-external');
   }
 }
@@ -935,20 +956,57 @@ function renderWelcomeChannelPickers(){
   }).join('');
 }
 
+function setExternalMode(mode){
+  externalMode=mode;
+  document.getElementById('ex-mode-file').classList.toggle('active',mode==='file');
+  document.getElementById('ex-mode-url').classList.toggle('active',mode==='url');
+  document.getElementById('ex-file-group').style.display=mode==='file'?'':'none';
+  document.getElementById('ex-url-group').style.display=mode==='url'?'':'none';
+}
+
+function handleExternalFile(ev){
+  const file=ev.target.files&&ev.target.files[0];
+  const status=document.getElementById('ex-file-status');
+  if(!file){currentExternalFile=null;status.textContent='Selecciona el archivo .html del bot.';return;}
+  if(!/\.(html?|HTML?)$/.test(file.name)){
+    status.innerHTML='<span style="color:var(--red)">⚠️ Debe ser un archivo .html</span>';
+    currentExternalFile=null;ev.target.value='';return;
+  }
+  const reader=new FileReader();
+  reader.onload=()=>{
+    currentExternalFile={name:file.name,content:reader.result};
+    status.innerHTML=`<span style="color:var(--green)">✅ ${file.name}</span> (${Math.round(file.size/1024)} KB) listo para guardar.`;
+  };
+  reader.onerror=()=>{
+    status.innerHTML='<span style="color:var(--red)">⚠️ No se pudo leer el archivo</span>';
+    currentExternalFile=null;
+  };
+  reader.readAsText(file);
+}
+
 async function saveBot(type){
   if(type==='external'){
     const name=document.getElementById('ex-name').value.trim();
-    const url=document.getElementById('ex-url').value.trim();
     if(!name){showToast('⚠️ Ponle un nombre al bot');return;}
-    if(!url){showToast('⚠️ Ingresa la URL del bot');return;}
     const id=editingBotId||('bot_ext_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+genId(5));
     const cmds=document.getElementById('ex-cmds').value.trim().split('\n').filter(Boolean);
     const bot={uid:id,name,type:'external',ownerId:window._currentUid,
       avatarUrl:document.getElementById('ex-avatar').value.trim(),
       avatarColor:document.getElementById('ex-color').value||'#3b82f6',
-      externalUrl:url,
       description:document.getElementById('ex-desc').value.trim()||'Bot externo',
       botCommands:cmds,installedServers:[]};
+    if(externalMode==='file'){
+      if(!currentExternalFile){showToast('⚠️ Sube el archivo HTML del bot');return;}
+      bot.fileName=currentExternalFile.name;
+      bot.fileContent=currentExternalFile.content;
+      bot.externalUrl='';
+    } else {
+      const url=document.getElementById('ex-url').value.trim();
+      if(!url){showToast('⚠️ Ingresa la URL del bot');return;}
+      bot.externalUrl=url;
+      bot.fileName='';
+      bot.fileContent='';
+    }
     await fbSet('botdata/bots/'+id,bot);
     showToast('✅ Bot externo registrado');showPage('list');return;
   }
@@ -1017,6 +1075,19 @@ async function saveBot(type){
 async function deleteBotMaker(id){
   if(!confirm('¿Eliminar este bot? Esto no se puede deshacer.'))return;
   await fbRemove('botdata/bots/'+id);showToast('🗑️ Bot eliminado');
+}
+
+function openExternalBot(id){
+  const b=myBots.find(x=>x.uid===id);if(!b)return;
+  if(b.fileContent){
+    const blob=new Blob([b.fileContent],{type:'text/html'});
+    const blobUrl=URL.createObjectURL(blob);
+    window.open(blobUrl,'_blank');
+  } else if(b.externalUrl){
+    window.open(b.externalUrl,'_blank');
+  } else {
+    showToast('⚠️ Este bot no tiene archivo ni URL configurados');
+  }
 }
 
 function renderSearchChannelPickers(){
@@ -1526,15 +1597,19 @@ function loadServersAdmin(){
     const servers=snap.exists()?Object.entries(snap.val()).map(([id,v])=>({id,...v})):[];
     const el=document.getElementById('servers-list');if(!el)return;
     if(!servers.length){el.innerHTML='<div class="empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><p>Ningún servidor tiene bots activos aún.</p></div>';return;}
-    el.innerHTML=servers.map(s=>`
-      <div class="bot-card">
-        <div style="font-size:1.5rem;">${s.icon||'🖥️'}</div>
-        <div style="flex:1;min-width:0;">
-          <div class="bot-name">${s.name||s.id}</div>
-          <div class="bot-meta">${s.breaddexEnabled?'🍞 BreadDex activo en #'+s.breaddexChannel:'🍞 BreadDex off'} &nbsp;·&nbsp; ${s.guydexEnabled?'👤 GuyDex activo en #'+s.guydexChannel:'👤 GuyDex off'}</div>
-        </div>
-        <button class="btn btn-danger btn-sm" onclick="removeServerBot('${s.id}')">Quitar</button>
-      </div>`).join('');
+    fbGetSnap('botdata/bots').then(botsSnap=>{
+      const allBots=botsSnap&&botsSnap.exists()?Object.values(botsSnap.val()):[];
+      el.innerHTML=servers.map(s=>{
+        const botCount=allBots.filter(b=>(b.installedServers||[]).includes(s.id)).length;
+        return `<div class="bot-card">
+          <div style="font-size:1.5rem;">${s.icon||'🖥️'}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="bot-name">${s.name||s.id}</div>
+            <div class="bot-meta">${botCount} bot${botCount===1?'':'s'} instalado${botCount===1?'':'s'}</div>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="removeServerBot('${s.id}')">Quitar</button>
+        </div>`;}).join('');
+    });
   });
 }
 
