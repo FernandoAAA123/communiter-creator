@@ -364,6 +364,16 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
         Servidores
       </button>
+
+      <div class="nav-section-label" style="margin-top:6px;">Perfil</div>
+      <button class="nav-item" id="nav-profile" onclick="switchSection('profile',this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Mi perfil
+      </button>
+      <button class="nav-item" id="nav-theme" onclick="switchSection('theme',this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>
+        Tema Nova
+      </button>
     </nav>
 
     <div class="sidebar-user">
@@ -420,6 +430,20 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
             <div class="tc-icon" style="color:#10b981;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
             <h3>Bot de busqueda</h3>
             <p>Busca imagenes, paginas web o videos de YouTube con /img, /search y /yt.</p>
+          </div>
+        </div>
+        <div style="margin-bottom:8px;"><span style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);">Plugins Dex</span></div>
+        <div style="font-size:.78rem;color:var(--text-2);margin-bottom:12px;">Modos especiales de captura con configuración visual. Sin necesidad de bot admin separado.</div>
+        <div class="type-grid" style="margin-bottom:22px;">
+          <div class="type-card" onclick="startCreate('plugin-mine')" style="border-color:rgba(167,139,250,.3);">
+            <div class="tc-icon" style="color:#a78bfa;font-size:1.8rem;">🔍</div>
+            <h3>Dex Mine <span style="font-size:.68rem;font-weight:700;color:#a78bfa;background:rgba(167,139,250,.12);border-radius:4px;padding:1px 6px;">PLUGIN</span></h3>
+            <p>Nombre oculto — el primero en /mine [nombre] correcto gana. Con catálogo visual de elementos.</p>
+          </div>
+          <div class="type-card" onclick="startCreate('plugin-fight')" style="border-color:rgba(245,158,11,.3);">
+            <div class="tc-icon" style="color:#f59e0b;font-size:1.8rem;">⚔️</div>
+            <h3>Dex Fight-Catch <span style="font-size:.68rem;font-weight:700;color:#f59e0b;background:rgba(245,158,11,.12);border-radius:4px;padding:1px 6px;">PLUGIN</span></h3>
+            <p>Spawn competitivo — el primero en /catch [nombre] exacto dentro del tiempo gana.</p>
           </div>
         </div>
         <div style="margin-bottom:8px;"><span style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);">Adicionales</span></div>
@@ -489,6 +513,26 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
             <button class="btn btn-ghost" onclick="showPage('list')">Cancelar</button>
           </div>
         </div>
+      </div>
+
+      <!-- PAGE: PLUGIN DEX (mine / fight) -->
+      <div class="page" id="page-edit-plugin">
+        <button class="back-link" onclick="showPage('type-picker')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Volver
+        </button>
+        <div class="form-box" id="plugin-form-box">
+          <!-- Se rellena dinámicamente con renderPluginForm() -->
+        </div>
+        <!-- Catálogo visual -->
+        <div class="section-header" style="margin-top:20px;">
+          <div><h2 style="font-size:1.05rem;" id="plugin-catalog-title">Elementos cargados</h2></div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="count-badge" id="plugin-item-count">0 elementos</span>
+            <button class="btn btn-primary btn-sm" onclick="openAddItemModal()">+ Añadir elemento</button>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;"><input type="text" placeholder="Buscar elementos..." oninput="filterPluginCards(this.value)" style="background:var(--bg-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 14px;color:var(--text-0);font-family:var(--font);font-size:.875rem;outline:none;width:260px;"></div>
+        <div class="cards-grid" id="plugin-cards-grid"></div>
       </div>
 
       <!-- PAGE: BOT DE BUSQUEDA -->
@@ -646,8 +690,170 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
       <div id="servers-list" style="display:flex;flex-direction:column;gap:10px;"></div>
     </div>
 
+    <!-- ══════════════════════════════════════════
+         SECCIÓN: PERFIL
+    ══════════════════════════════════════════ -->
+    <div class="section" id="sec-profile">
+      <div class="section-header">
+        <div class="section-header-text">
+          <h2>Mi perfil</h2>
+          <p>Edita tu nombre visible y avatar en Nova Studio.</p>
+        </div>
+        <button class="btn btn-primary" onclick="saveProfile()">Guardar cambios</button>
+      </div>
+      <div class="form-box" style="max-width:500px;">
+        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg> Información visible</h3>
+        <div class="sub">Estos datos se muestran en el sidebar y cuando tus bots envían mensajes.</div>
+        <div class="form-group"><label>Nombre visible</label><input type="text" id="profile-name" placeholder="Tu nombre en Nova" class="fi"></div>
+        <div class="form-group"><label>URL de avatar</label><input type="url" id="profile-avatar" placeholder="https://..." class="fi" oninput="previewImg('profile-avatar','profile-preview')"></div>
+        <div class="img-preview" id="profile-preview" style="height:80px;width:80px;border-radius:50%;margin-bottom:10px;">U</div>
+        <div class="form-group"><label>Color de avatar</label><input type="color" id="profile-color" value="#7c3aed" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="saveProfile()">Guardar</button>
+        </div>
+      </div>
+      <div class="form-box" style="max-width:500px;margin-top:16px;">
+        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Mis comunidades</h3>
+        <div class="sub">Comunidades donde eres admin o dueño. Aquí puedes añadir tus bots a nuevas comunidades.</div>
+        <div id="profile-servers-list" style="display:flex;flex-direction:column;gap:8px;margin-top:4px;"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SECCIÓN: TEMA
+    ══════════════════════════════════════════ -->
+    <div class="section" id="sec-theme">
+      <div class="section-header">
+        <div class="section-header-text">
+          <h2>Editor de tema</h2>
+          <p>Personaliza los colores de Nova Studio. Los cambios se aplican en tiempo real.</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="resetTheme()">Restablecer</button>
+          <button class="btn btn-primary" onclick="saveTheme()">Guardar tema</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:760px;">
+        <div class="form-box">
+          <h3>🎨 Colores principales</h3>
+          <div class="sub">Cambia el acento y el fondo del studio.</div>
+          <div class="form-group"><label>Color de acento</label>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <input type="color" id="th-accent" value="#7c3aed" style="width:48px;height:38px;padding:2px;cursor:pointer;" oninput="applyThemePreview()">
+              <input type="text" id="th-accent-hex" value="#7c3aed" class="fi" style="flex:1;" oninput="syncColorFromHex('th-accent','th-accent-hex')">
+            </div>
+          </div>
+          <div class="form-group"><label>Fondo principal</label>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <input type="color" id="th-bg" value="#0b0b0f" style="width:48px;height:38px;padding:2px;cursor:pointer;" oninput="applyThemePreview()">
+              <input type="text" id="th-bg-hex" value="#0b0b0f" class="fi" style="flex:1;" oninput="syncColorFromHex('th-bg','th-bg-hex')">
+            </div>
+          </div>
+          <div class="form-group"><label>Color de paneles</label>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <input type="color" id="th-panel" value="#141420" style="width:48px;height:38px;padding:2px;cursor:pointer;" oninput="applyThemePreview()">
+              <input type="text" id="th-panel-hex" value="#141420" class="fi" style="flex:1;" oninput="syncColorFromHex('th-panel','th-panel-hex')">
+            </div>
+          </div>
+        </div>
+        <div class="form-box">
+          <h3>👁️ Vista previa</h3>
+          <div style="background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;">
+            <div style="font-size:.82rem;font-weight:700;color:var(--text-0);margin-bottom:6px;">Ejemplo de panel</div>
+            <div style="font-size:.75rem;color:var(--text-2);margin-bottom:10px;">Así se verán los componentes con el tema actual.</div>
+            <button class="btn btn-primary btn-sm">Botón acento</button>
+            <button class="btn btn-ghost btn-sm" style="margin-left:6px;">Botón ghost</button>
+          </div>
+          <div style="background:var(--accent);border-radius:8px;height:36px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;" id="th-preview-bar">Barra de acento</div>
+          <div class="form-hint">Los cambios son en vivo. Pulsa "Guardar tema" para que persistan al recargar.</div>
+        </div>
+      </div>
+      <div class="form-box" style="max-width:760px;margin-top:4px;">
+        <h3>📤 Importar / Exportar</h3>
+        <div class="sub">Guarda tu tema como JSON o carga uno existente.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+          <button class="btn btn-ghost" onclick="exportTheme()">Exportar JSON</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('th-import-input').click()">Importar JSON</button>
+          <input type="file" id="th-import-input" accept=".json" style="display:none;" onchange="importThemeFile(event)">
+        </div>
+      </div>
+    </div>
+
   </div><!-- /main -->
 </div><!-- /app -->
+
+<!-- MODAL: AÑADIR ELEMENTO AL PLUGIN -->
+<div class="modal-overlay" id="add-item-modal">
+  <div class="modal" style="max-width:520px;">
+    <button class="close-btn" onclick="document.getElementById('add-item-modal').classList.remove('open')">✕</button>
+    <h2 id="add-item-modal-title">Añadir elemento</h2>
+
+    <!-- ICON PREVIEW + PICKER -->
+    <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;">
+      <!-- Big live preview -->
+      <div id="ai-icon-preview" style="width:72px;height:72px;border-radius:14px;background:var(--bg-3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2.4rem;flex-shrink:0;cursor:pointer;transition:border-color .15s;" onclick="toggleEmojiPicker()" title="Haz clic para elegir icono">❔</div>
+      <div style="flex:1;">
+        <div class="form-group" style="margin-bottom:8px;">
+          <label>Nombre *</label>
+          <input type="text" class="fi" id="ai-name" placeholder="Estrella dorada">
+        </div>
+        <!-- Manual emoji input row -->
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" class="fi" id="ai-icon" placeholder="⭐ o escribe emoji" maxlength="8" style="font-size:1.1rem;text-align:center;width:110px;flex-shrink:0;" oninput="syncIconPreview(this.value)">
+          <button class="btn btn-ghost btn-sm" onclick="toggleEmojiPicker()" style="white-space:nowrap;">🎨 Elegir</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearIcon()" style="color:var(--text-3);">✕ Quitar</button>
+        </div>
+        <div class="form-hint" style="margin-top:4px;">Aparece en spawns y en la colección del usuario.</div>
+      </div>
+    </div>
+
+    <!-- EMOJI PICKER PANEL (hidden by default) -->
+    <div id="emoji-picker-panel" style="display:none;background:var(--bg-1);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:14px;">
+      <!-- Category tabs -->
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px;" id="emoji-cats"></div>
+      <!-- Search -->
+      <input type="text" placeholder="Buscar emoji..." class="fi" id="emoji-search" oninput="filterEmojiGrid(this.value)" style="margin-bottom:8px;font-size:.85rem;">
+      <!-- Grid -->
+      <div id="emoji-grid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-height:180px;overflow-y:auto;"></div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group"><label>Rareza</label>
+        <select class="fi" id="ai-rarity" onchange="updateRarityPreview()">
+          <option value="common">○ Common — Común</option>
+          <option value="uncommon">◉ Uncommon — Poco común</option>
+          <option value="rare" selected>◈ Rare — Raro</option>
+          <option value="epic">◆ Epic — Épico</option>
+          <option value="legendary">★ Legendary — Legendario</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Peso (1–100)</label>
+        <input type="number" class="fi" id="ai-weight" value="40" min="1" max="100">
+        <div class="form-hint">Mayor peso = aparece más seguido.</div>
+      </div>
+      <div class="form-group full"><label>Descripción</label><textarea class="fi" id="ai-desc" rows="2" placeholder="Brilla en la oscuridad..."></textarea></div>
+      <div class="form-group full"><label>URL de imagen (opcional)</label>
+        <input type="url" class="fi" id="ai-img" placeholder="https://..." oninput="syncImgPreview(this.value)">
+        <div class="form-hint">Si tienes imagen, reemplaza al emoji en la card.</div>
+      </div>
+    </div>
+
+    <!-- Mini card preview -->
+    <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:4px;" id="ai-card-preview">
+      <div style="width:44px;height:44px;border-radius:10px;background:var(--bg-4);display:flex;align-items:center;justify-content:center;font-size:1.6rem;overflow:hidden;flex-shrink:0;" id="ai-preview-img">❔</div>
+      <div>
+        <div style="font-weight:700;color:var(--text-0);font-size:.9rem;" id="ai-preview-name">Nombre del elemento</div>
+        <div style="font-size:.72rem;color:var(--text-2);margin-top:1px;" id="ai-preview-rarity">◈ Rare</div>
+      </div>
+    </div>
+    <div class="form-hint" style="margin-bottom:14px;">Así se verá en la colección.</div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="document.getElementById('add-item-modal').classList.remove('open')">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmAddItem()">Guardar elemento</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ══════════════════════════════════════════
@@ -664,6 +870,9 @@ let currentEditType = null, editingBotId = null;
 let selectedServers = new Set(), welcomeChannelChoice = {};
 let externalMode = 'file'; // 'file' | 'url'
 let currentExternalFile = null; // {name, content} cuando se sube un archivo HTML
+let currentPluginType = null; // 'plugin-mine' | 'plugin-fight'
+let currentPluginItems = []; // items del plugin
+let editingItemIndex = null; // para editar item existente
 let runningBot = null, runningListeners = [], lastKnownMembers = {};
 
 // ── ADMIN STATE ──
@@ -756,7 +965,7 @@ async function loadMyServers(){
 }
 
 // Tipos de bot conocidos — cualquier tipo nuevo sólo necesita añadirse aquí
-const BOT_TYPES = ['welcome','dex','search','external'];
+const BOT_TYPES = ['welcome','dex','search','external','plugin-mine','plugin-fight'];
 
 // Datos de tipos huérfanos detectados al cargar (type -> count)
 let orphanedData = {};
@@ -789,8 +998,8 @@ function renderMyBots(){
     el.innerHTML=`<div class="empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 15h.01M16 15h.01"/></svg><p>Aún no has creado ningún bot.<br>Haz clic en "Crear bot" para empezar.</p></div>`;
     return;
   }
-  const typeLabels={welcome:'Bienvenida',dex:'Dex',search:'Búsqueda',external:'Externo'};
-  const typeColors={search:'#10b981',external:'#3b82f6'};
+  const typeLabels={welcome:'Bienvenida',dex:'Dex',search:'Búsqueda',external:'Externo','plugin-mine':'Dex Mine','plugin-fight':'Fight-Catch'};
+  const typeColors={search:'#10b981',external:'#3b82f6','plugin-mine':'#a78bfa','plugin-fight':'#f59e0b'};
   el.innerHTML=myBots.map(b=>{
     const label=typeLabels[b.type]||b.type;
     const customColor=typeColors[b.type];
@@ -800,10 +1009,14 @@ function renderMyBots(){
       ?(b.fileContent?`📄 ${b.fileName||'archivo.html'} <span style="color:var(--text-3);">(subido)</span>`:`<a href="${b.externalUrl||'#'}" target="_blank" style="color:#3b82f6;font-size:.75rem;">${b.externalUrl||'Sin URL'}</a>`)
       :b.type==='search'
         ?`Comandos: ${b.imgCmd||'/img'} · ${b.searchCmd||'/search'} · ${b.ytCmd||'/yt'}`
-        :`${(b.installedServers||[]).length} comunidad${(b.installedServers||[]).length===1?'':'es'} activa${(b.installedServers||[]).length===1?'':'s'}${b.type==='dex'?' · '+(b.items||[]).length+' elementos':''}`;
+        :(b.type==='plugin-mine'||b.type==='plugin-fight')
+          ?`${(b.items||[]).length} elementos · ${(b.installedServers||[]).length} comunidad(es) · cmd: ${b.spawnCmd||'/catch'}`
+          :`${(b.installedServers||[]).length} comunidad${(b.installedServers||[]).length===1?'':'es'} activa${(b.installedServers||[]).length===1?'':'s'}${b.type==='dex'?' · '+(b.items||[]).length+' elementos':''}`;
     const actionBtn=b.type==='external'
       ?`<button class="btn btn-primary btn-sm" onclick="openExternalBot('${b.uid}')">↗ Abrir</button>`
-      :`<button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')">▶ Activar</button>`;
+      :(b.type==='plugin-mine'||b.type==='plugin-fight')
+        ?`<button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')" style="background:${typeColors[b.type]||'var(--accent)'};color:#fff;">▶ Activar</button>`
+        :`<button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')">▶ Activar</button>`;
     return `<div class="bot-card">
       <div class="bot-ava" style="background:${b.avatarColor||'#7c3aed'};">${b.avatarUrl?`<img src="${b.avatarUrl}">`:(b.name||'B')[0].toUpperCase()}</div>
       <div style="flex:1;min-width:0;">
@@ -859,6 +1072,13 @@ function startCreate(type){
     document.getElementById('ex-file-status').textContent='Selecciona el archivo .html del bot.';
     setExternalMode('file');
     showPage('edit-external');
+  } else if(type==='plugin-mine'||type==='plugin-fight'){
+    currentPluginType=type;
+    currentPluginItems=[];
+    editingItemIndex=null;
+    renderPluginForm(null);
+    renderPluginCards();
+    showPage('edit-plugin');
   }
 }
 
@@ -919,6 +1139,13 @@ function editBot(id){
       document.getElementById('ex-file-status').textContent='Selecciona el archivo .html del bot.';
     }
     showPage('edit-external');
+  } else if(b.type==='plugin-mine'||b.type==='plugin-fight'){
+    currentPluginType=b.type;
+    currentPluginItems=[...(b.items||[])];
+    editingItemIndex=null;
+    renderPluginForm(b);
+    renderPluginCards();
+    showPage('edit-plugin');
   }
 }
 
@@ -1436,6 +1663,7 @@ async function runBot(id){
   window.addEventListener('beforeunload',_beforeUnloadHandler);
   if(bot.type==='dex') startDexBot(bot);
   else if(bot.type==='search') startSearchBot(bot);
+  else if(bot.type==='plugin-mine'||bot.type==='plugin-fight') startPluginBot(bot);
   else startWelcomeBot(bot);
 }
 
@@ -1672,6 +1900,620 @@ function closeAdminModal(id){
 document.addEventListener('click',e=>{
   if(e.target.classList.contains('modal-overlay'))closeAdminModal(e.target.id);
 });
+
+// ══════════════════════════════════════════
+// PLUGIN BOT FUNCTIONS (Dex Mine / Fight-Catch)
+// ══════════════════════════════════════════
+
+const PLUGIN_DEFS = {
+  'plugin-mine': {
+    label: 'Dex Mine', icon: '🔍', color: '#a78bfa',
+    defaultCmd: '/mine', defaultColCmd: '/coleccion',
+    cmdLabel: 'Comando de minería', cmdPlaceholder: '/mine',
+    description: 'Nombre oculto — el primero en adivinar en el tiempo límite lo gana.',
+  },
+  'plugin-fight': {
+    label: 'Dex Fight-Catch', icon: '⚔️', color: '#f59e0b',
+    defaultCmd: '/catch', defaultColCmd: '/coleccion',
+    cmdLabel: 'Comando de captura', cmdPlaceholder: '/catch',
+    description: 'Spawn competitivo — el primero en escribir el nombre exacto gana.',
+  }
+};
+
+function renderPluginForm(bot){
+  const def = PLUGIN_DEFS[currentPluginType]||PLUGIN_DEFS['plugin-mine'];
+  const box = document.getElementById('plugin-form-box');
+  if(!box) return;
+  const title = document.getElementById('plugin-catalog-title');
+  if(title) title.textContent = def.label+' — Elementos cargados';
+  box.innerHTML = `
+    <h3 style="color:${def.color};">${def.icon} ${def.label} — Configuración</h3>
+    <div class="sub">${def.description}</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Nombre del bot *</label><input type="text" id="pl-name" class="fi" placeholder="${def.label}" value="${(bot&&bot.name)||''}"></div>
+      <div class="form-group"><label>Avatar (URL)</label><input type="url" id="pl-avatar" class="fi" placeholder="https://..." value="${(bot&&bot.avatarUrl)||''}"></div>
+      <div class="form-group"><label>Color</label><input type="color" id="pl-color" value="${(bot&&bot.avatarColor)||def.color}" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
+      <div class="form-group"><label>Idioma</label>
+        <select id="pl-lang" class="fi">
+          <option value="es"${(!bot||bot.lang==='es')?' selected':''}>Español</option>
+          <option value="en"${(bot&&bot.lang==='en')?' selected':''}>English</option>
+        </select>
+      </div>
+      <div class="form-group"><label>${def.cmdLabel}</label><input type="text" id="pl-cmd" class="fi" placeholder="${def.cmdPlaceholder}" value="${(bot&&bot.spawnCmd)||def.defaultCmd}"></div>
+      <div class="form-group"><label>Comando de colección</label><input type="text" id="pl-colcmd" class="fi" placeholder="/coleccion" value="${(bot&&bot.collectionCmd)||def.defaultColCmd}"></div>
+      <div class="form-group"><label>Intervalo spawns (min)</label><input type="number" id="pl-interval" class="fi" value="${(bot&&bot.interval)||30}" min="1"></div>
+      <div class="form-group"><label>Segundos para adivinar</label><input type="number" id="pl-timer" class="fi" value="${(bot&&bot.captureTimer)||60}" min="5" max="300"></div>
+      <div class="form-group full"><label>¿En qué comunidades?</label><div class="server-pick" id="pl-servers"></div></div>
+      <div class="form-group full" id="pl-channel-pickers"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="savePluginBot()">Guardar bot</button>
+      <button class="btn btn-ghost" onclick="showPage('list')">Cancelar</button>
+    </div>`;
+  // Restore server selection if editing
+  if(bot) selectedServers = new Set(bot.installedServers||[]);
+  else selectedServers = new Set();
+  renderServerPicker('pl-servers','pl');
+  renderPluginChannelPickers();
+}
+
+function renderPluginChannelPickers(){
+  const el=document.getElementById('pl-channel-pickers');if(!el)return;
+  if(!selectedServers.size){el.innerHTML='';return;}
+  el.innerHTML=Array.from(selectedServers).map(srvId=>{
+    const srv=myServers.find(s=>s.id===srvId);if(!srv)return'';
+    const channels=getAllChannelsOf(srv);
+    const current=welcomeChannelChoice[srvId]||(channels[0]?.id||'');
+    welcomeChannelChoice[srvId]=current;
+    return`<div style="margin-bottom:10px;">
+      <label style="font-size:.78rem;color:var(--text-2);display:block;margin-bottom:5px;">Canal en <strong style="color:var(--text-0);">${srv.name}</strong></label>
+      <select onchange="welcomeChannelChoice['${srvId}']=this.value" style="width:100%;background:var(--bg-3);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text-0);font-family:var(--font);font-size:.85rem;outline:none;">
+        ${channels.map(ch=>`<option value="${ch.id}"${ch.id===current?' selected':''}>#${ch.name}</option>`).join('')}
+      </select></div>`;
+  }).join('');
+}
+
+function toggleServerChipForPlugin(srvId){
+  if(selectedServers.has(srvId))selectedServers.delete(srvId);else selectedServers.add(srvId);
+  renderServerPicker('pl-servers','pl');
+  renderPluginChannelPickers();
+}
+
+async function savePluginBot(){
+  const def = PLUGIN_DEFS[currentPluginType]||PLUGIN_DEFS['plugin-mine'];
+  const name = (document.getElementById('pl-name')||{}).value?.trim();
+  if(!name){showToast('⚠️ Ponle un nombre al bot');return;}
+  if(!currentPluginItems.length){showToast('⚠️ Añade al menos un elemento antes de guardar');return;}
+  const id = editingBotId||('bot_'+currentPluginType.replace('plugin-','')+'_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+genId(5));
+  const spawnCmd = document.getElementById('pl-cmd').value.trim()||def.defaultCmd;
+  const collectionCmd = document.getElementById('pl-colcmd').value.trim()||def.defaultColCmd;
+  const bot = {
+    uid: id, name, type: currentPluginType, ownerId: window._currentUid,
+    avatarUrl: document.getElementById('pl-avatar').value.trim(),
+    avatarColor: document.getElementById('pl-color').value||def.color,
+    lang: document.getElementById('pl-lang').value||'es',
+    spawnCmd, collectionCmd,
+    interval: parseInt(document.getElementById('pl-interval').value)||30,
+    captureTimer: parseInt(document.getElementById('pl-timer').value)||60,
+    description: def.description,
+    botCommands: [spawnCmd+' [nombre] — '+def.description, collectionCmd+' — Ver tu colección'],
+    installedServers: [...selectedServers],
+    channels: {...welcomeChannelChoice},
+    items: currentPluginItems
+  };
+  await fbSet('botdata/bots/'+id, bot);
+  showToast('✅ Plugin guardado');
+  showPage('list');
+}
+
+function renderPluginCards(){
+  const grid = document.getElementById('plugin-cards-grid');
+  const countEl = document.getElementById('plugin-item-count');
+  if(countEl) countEl.textContent = currentPluginItems.length+' elementos';
+  if(!grid) return;
+  if(!currentPluginItems.length){
+    grid.innerHTML='<div class="empty"><p>Sin elementos. Haz clic en "+ Añadir elemento" para agregar.</p></div>';
+    return;
+  }
+  grid.innerHTML = currentPluginItems.map((it,i)=>{
+    return`<div class="card">
+      <div class="card-img">
+        <span class="card-num">#${String(i+1).padStart(3,'0')}</span>
+        ${it.imageUrl?`<img src="${it.imageUrl}" onerror="this.parentElement.innerHTML='${it.icon||'❔'}'">`:(it.icon||'❔')}
+      </div>
+      <div class="card-body">
+        <div class="card-name">${it.name}</div>
+        <div class="card-desc">${it.description||'Sin descripción.'}</div>
+        <div class="card-meta">
+          <span class="rarity-badge r-${it.rarity}">${RARITY_ICONS[it.rarity]} ${cap(it.rarity)}</span>
+          <span style="display:flex;gap:4px;">
+            <button class="btn btn-ghost btn-sm" onclick="editPluginItem(${i})" style="padding:3px 8px;">✏️</button>
+            <button class="btn btn-danger btn-sm" onclick="deletePluginItem(${i})" style="padding:3px 8px;">🗑</button>
+          </span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterPluginCards(q){
+  const grid = document.getElementById('plugin-cards-grid');if(!grid)return;
+  const filtered = q ? currentPluginItems.filter(it=>it.name.toLowerCase().includes(q.toLowerCase())) : currentPluginItems;
+  grid.innerHTML = filtered.map((it,i)=>{
+    return`<div class="card"><div class="card-img"><span class="card-num">#${String(i+1).padStart(3,'0')}</span>${it.imageUrl?`<img src="${it.imageUrl}">`:(it.icon||'❔')}</div><div class="card-body"><div class="card-name">${it.name}</div><div class="card-desc">${it.description||''}</div><div class="card-meta"><span class="rarity-badge r-${it.rarity}">${RARITY_ICONS[it.rarity]} ${cap(it.rarity)}</span><button class="btn btn-danger btn-sm" onclick="deletePluginItem(${i})" style="padding:3px 8px;">🗑</button></div></div></div>`;
+  }).join('');
+}
+
+// ── EMOJI PICKER DATA ──
+const EMOJI_CATS = [
+  { label:'⭐ Objetos', emojis:['⭐','🌟','💫','✨','🔥','💎','🏆','👑','🎯','🎪','🎨','🎭','🎲','🎮','🕹️','🎁','🎀','🎗️','🏅','🥇','🥈','🥉','🔮','💰','💵','💴','💎','🧿','🪄','⚡','🌈','🌙','☀️','❄️','🌊','🍀','🌺','🌸','🌻','🌹','🦋','🐉','🦄','🦊','🐺','🐻','🦁','🐯','🦅','🦚','🦩','🦜'] },
+  { label:'⚔️ Acción', emojis:['⚔️','🗡️','🛡️','🏹','🔱','⚙️','🔧','🔩','🧲','🔬','🧬','💉','🧪','🔭','🚀','🛸','⚓','🧭','🗺️','🔑','🗝️','🔐','🔒','🔓','💣','🧨','🪓','🔫','🪃','🥊','🏋️','🤺','🎣','🏄','🧗','🤿','🎿','⛷️','🏇','🚵'] },
+  { label:'🌍 Naturaleza', emojis:['🌍','🌎','🌏','🗻','🏔️','⛰️','🌋','🏜️','🏝️','🌿','🍃','🌱','🌲','🌳','🌴','🍁','🍂','🍄','🌾','💐','🌷','🌺','🏵️','🌻','🌼','🌸','🌹','🥀','🌙','🌛','🌜','🌝','☀️','🌤️','⛅','🌧️','⛈️','🌩️','🌨️','❄️','☃️','⛄','🌊','💧','🔥','🌪️','🌈','☁️','⭐'] },
+  { label:'✨ Magia', emojis:['✨','🔮','🧿','🪄','🎩','🧙','🧝','🧚','🧜','🧛','🧟','👻','💀','☠️','🕯️','🪬','📿','🧲','🌀','💠','🔯','✡️','☯️','🌌','🪐','💫','⚡','🌟','🌠','🌃','🌉','🌁','🏰','🗼','🕌','⛪','🛕','🏯','⛩️','🗽'] },
+  { label:'💜 Rarezas', emojis:['💜','💙','💚','💛','🧡','❤️','🖤','🤍','🤎','💗','💓','💕','💞','💝','💖','💘','❣️','💔','🫀','❤️‍🔥','❤️‍🩹','♾️','⚜️','🔷','🔶','🔸','🔹','🔺','🔻','💠','🔘','⚫','⚪','🟤','🟠','🟡','🟢','🔵','🟣','🔴'] },
+];
+let _emojiCatIndex = 0;
+let _emojiOpen = false;
+
+function initEmojiPicker(){
+  const catsEl = document.getElementById('emoji-cats');
+  if(!catsEl||catsEl.children.length) return; // already init
+  EMOJI_CATS.forEach((cat,i)=>{
+    const btn = document.createElement('button');
+    btn.className='btn btn-ghost btn-sm';
+    btn.style.cssText='padding:4px 10px;font-size:.78rem;';
+    btn.textContent=cat.label;
+    btn.onclick=()=>{ _emojiCatIndex=i; renderEmojiGrid(); highlightCat(i); };
+    catsEl.appendChild(btn);
+  });
+  renderEmojiGrid();
+  highlightCat(0);
+}
+
+function highlightCat(idx){
+  const catsEl=document.getElementById('emoji-cats');if(!catsEl)return;
+  [...catsEl.children].forEach((b,i)=>{
+    b.style.background=i===idx?'var(--accent)':'';
+    b.style.color=i===idx?'#fff':'';
+    b.style.borderColor=i===idx?'var(--accent)':'';
+  });
+}
+
+function renderEmojiGrid(filter){
+  const grid=document.getElementById('emoji-grid');if(!grid)return;
+  const cat=EMOJI_CATS[_emojiCatIndex];
+  let emojis=cat.emojis;
+  if(filter){
+    const q=filter.toLowerCase();
+    emojis=EMOJI_CATS.flatMap(c=>c.emojis).filter((_,i)=>true); // all when searching
+    // simple search: just show all emojis when typing
+    emojis=EMOJI_CATS.flatMap(c=>c.emojis);
+  }
+  grid.innerHTML=emojis.map(e=>`<button onclick="pickEmoji('${e}')" style="background:none;border:none;font-size:1.4rem;cursor:pointer;padding:4px;border-radius:6px;line-height:1;transition:background .1s;" onmouseover="this.style.background='var(--bg-4)'" onmouseout="this.style.background='none'">${e}</button>`).join('');
+}
+
+function filterEmojiGrid(q){
+  const grid=document.getElementById('emoji-grid');if(!grid)return;
+  if(!q){renderEmojiGrid();return;}
+  const all=EMOJI_CATS.flatMap(c=>c.emojis);
+  grid.innerHTML=all.map(e=>`<button onclick="pickEmoji('${e}')" style="background:none;border:none;font-size:1.4rem;cursor:pointer;padding:4px;border-radius:6px;line-height:1;" onmouseover="this.style.background='var(--bg-4)'" onmouseout="this.style.background='none'">${e}</button>`).join('');
+}
+
+function toggleEmojiPicker(){
+  const panel=document.getElementById('emoji-picker-panel');if(!panel)return;
+  _emojiOpen=!_emojiOpen;
+  panel.style.display=_emojiOpen?'block':'none';
+  if(_emojiOpen){ initEmojiPicker(); document.getElementById('emoji-search').focus(); }
+}
+
+function pickEmoji(e){
+  document.getElementById('ai-icon').value=e;
+  syncIconPreview(e);
+  // close picker
+  _emojiOpen=false;
+  const panel=document.getElementById('emoji-picker-panel');
+  if(panel) panel.style.display='none';
+}
+
+function syncIconPreview(val){
+  const v=val||'❔';
+  const prev=document.getElementById('ai-icon-preview');
+  const prev2=document.getElementById('ai-preview-img');
+  const imgUrl=document.getElementById('ai-img')?.value?.trim();
+  if(prev) prev.textContent=v||'❔';
+  if(prev2&&!imgUrl) prev2.textContent=v||'❔';
+  updateItemPreview();
+}
+
+function syncImgPreview(url){
+  const prev2=document.getElementById('ai-preview-img');if(!prev2)return;
+  if(url){
+    prev2.innerHTML=`<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" onerror="this.parentElement.textContent='${document.getElementById('ai-icon')?.value||'❔'}'">`;
+  } else {
+    prev2.textContent=document.getElementById('ai-icon')?.value||'❔';
+  }
+}
+
+function clearIcon(){
+  document.getElementById('ai-icon').value='';
+  syncIconPreview('');
+  const prev=document.getElementById('ai-icon-preview');if(prev)prev.textContent='❔';
+}
+
+function updateRarityPreview(){
+  const r=document.getElementById('ai-rarity')?.value||'common';
+  const icons={common:'○',uncommon:'◉',rare:'◈',epic:'◆',legendary:'★'};
+  const labels={common:'Común',uncommon:'Poco común',rare:'Raro',epic:'Épico',legendary:'Legendario'};
+  const colors={common:'#c8c8e0',uncommon:'#10b981',rare:'#3b82f6',epic:'#a78bfa',legendary:'#f59e0b'};
+  const el=document.getElementById('ai-preview-rarity');
+  if(el){ el.textContent=icons[r]+' '+labels[r]; el.style.color=colors[r]||'var(--text-2)'; }
+}
+
+function updateItemPreview(){
+  const name=(document.getElementById('ai-name')?.value||'').trim()||'Nombre del elemento';
+  document.getElementById('ai-preview-name').textContent=name;
+  updateRarityPreview();
+}
+
+// Live update preview as user types name
+document.addEventListener('input', e=>{
+  if(e.target.id==='ai-name') updateItemPreview();
+  if(e.target.id==='ai-rarity') updateRarityPreview();
+});
+
+function openAddItemModal(){
+  editingItemIndex=null;
+  _emojiOpen=false;
+  const panel=document.getElementById('emoji-picker-panel');if(panel)panel.style.display='none';
+  document.getElementById('add-item-modal-title').textContent='Añadir elemento';
+  ['ai-name','ai-icon','ai-desc','ai-img'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ai-rarity').value='rare';
+  document.getElementById('ai-weight').value='40';
+  const prev=document.getElementById('ai-icon-preview');if(prev)prev.textContent='❔';
+  const prev2=document.getElementById('ai-preview-img');if(prev2)prev2.textContent='❔';
+  document.getElementById('ai-preview-name').textContent='Nombre del elemento';
+  updateRarityPreview();
+  document.getElementById('add-item-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('ai-name')?.focus(),50);
+}
+
+function editPluginItem(idx){
+  editingItemIndex=idx;
+  const it=currentPluginItems[idx];if(!it)return;
+  _emojiOpen=false;
+  const panel=document.getElementById('emoji-picker-panel');if(panel)panel.style.display='none';
+  document.getElementById('add-item-modal-title').textContent='Editar elemento';
+  document.getElementById('ai-name').value=it.name||'';
+  document.getElementById('ai-icon').value=it.icon||'';
+  document.getElementById('ai-rarity').value=it.rarity||'common';
+  document.getElementById('ai-weight').value=it.weight||40;
+  document.getElementById('ai-desc').value=it.description||'';
+  document.getElementById('ai-img').value=it.imageUrl||'';
+  // sync previews
+  const prev=document.getElementById('ai-icon-preview');if(prev)prev.textContent=it.icon||'❔';
+  syncImgPreview(it.imageUrl||'');
+  if(!it.imageUrl){const p2=document.getElementById('ai-preview-img');if(p2)p2.textContent=it.icon||'❔';}
+  document.getElementById('ai-preview-name').textContent=it.name||'Nombre del elemento';
+  updateRarityPreview();
+  document.getElementById('add-item-modal').classList.add('open');
+}
+
+function confirmAddItem(){
+  const name=(document.getElementById('ai-name').value||'').trim();
+  if(!name){showToast('⚠️ El nombre es obligatorio');return;}
+  const item={
+    id:(editingItemIndex!==null&&currentPluginItems[editingItemIndex]?.id)||('item_'+genId(8)),
+    name, icon:document.getElementById('ai-icon').value.trim()||'',
+    rarity:document.getElementById('ai-rarity').value||'common',
+    weight:Math.max(1,Math.min(100,parseInt(document.getElementById('ai-weight').value)||40)),
+    description:document.getElementById('ai-desc').value.trim()||'',
+    imageUrl:document.getElementById('ai-img').value.trim()||'',
+    addedAt:Date.now()
+  };
+  if(editingItemIndex!==null){
+    currentPluginItems[editingItemIndex]=item;
+    showToast('✅ Elemento actualizado');
+  } else {
+    currentPluginItems.push(item);
+    showToast('✅ Elemento añadido');
+  }
+  document.getElementById('add-item-modal').classList.remove('open');
+  renderPluginCards();
+}
+
+function deletePluginItem(idx){
+  if(!confirm('¿Eliminar este elemento?'))return;
+  currentPluginItems.splice(idx,1);
+  renderPluginCards();
+}
+
+// Patch toggleServerChip to also handle 'pl' prefix
+const _origToggleServerChip = toggleServerChip;
+function toggleServerChip(srvId,prefix){
+  if(selectedServers.has(srvId))selectedServers.delete(srvId);else selectedServers.add(srvId);
+  if(prefix==='w'){renderServerPicker('w-servers','w');renderWelcomeChannelPickers();}
+  else if(prefix==='dx'){renderServerPicker('dx-servers','dx');renderDexChannelPickers('dx');}
+  else if(prefix==='pl'){renderServerPicker('pl-servers','pl');renderPluginChannelPickers();}
+  else if(prefix==='sr'){renderServerPicker('sr-servers','sr');renderSearchChannelPickers();}
+}
+
+// Plugin Bot Runtime — runs inside Nova Studio (no separate HTML needed)
+function startPluginBot(bot){
+  const channels = Object.values(bot.channels||{}).filter(Boolean);
+  if(!channels.length){addLog('warn','No hay canales configurados para este plugin.');return;}
+  const ismine = bot.type==='plugin-mine';
+  const cmd = (bot.spawnCmd||'/catch').toLowerCase().trim();
+  const colCmd = (bot.collectionCmd||'/coleccion').toLowerCase().trim();
+  const items = bot.items||[];
+  if(!items.length){addLog('warn','Este bot no tiene elementos.');return;}
+  const lang = bot.lang||'es';
+  const timer = bot.captureTimer||60;
+  const interval = bot.interval||30;
+  let activeSpawn = null;
+  let spawnTimer = null;
+  const RARITY_NAMES = lang==='en'
+    ?{common:'Common',uncommon:'Uncommon',rare:'Rare',epic:'Epic',legendary:'Legendary'}
+    :{common:'Común',uncommon:'Poco común',rare:'Raro',epic:'Épico',legendary:'Legendario'};
+
+  function pickItem(){
+    const total=items.reduce((s,it)=>s+(it.weight||60),0);
+    let r=Math.random()*total;
+    for(const it of items){r-=(it.weight||60);if(r<=0)return it;}
+    return items[items.length-1];
+  }
+
+  async function doSpawn(){
+    if(activeSpawn) return;
+    const channelId=channels[Math.floor(Math.random()*channels.length)];
+    const item=pickItem();if(!item)return;
+    const rarityLabel=RARITY_NAMES[item.rarity]||item.rarity;
+    let msg;
+    if(ismine){
+      msg=`🔍 **¡Algo misterioso ha aparecido!** (${rarityLabel})\n`;
+      if(item.icon) msg+=`[ ${item.icon} ??? ]\n`;
+      if(item.imageUrl) msg+=item.imageUrl+'\n';
+      msg+=`Escribe \`${cmd} [nombre]\` para identificarlo. ¡Tienes **${timer}s**!`;
+    } else {
+      msg=`⚔️ ¡Apareció **${item.icon||''} ${item.name}** (${rarityLabel})!\nEscribe \`${cmd} ${item.name}\` en **${timer}s**. ¡Solo el primero gana!`;
+      if(item.imageUrl) msg+='\n'+item.imageUrl;
+    }
+    await sendBotMsg(bot,channelId,msg);
+    addLog('warn',`Spawn: ${ismine?'???':item.name} (${rarityLabel})`);
+    const expireTimeout=setTimeout(async()=>{
+      if(!activeSpawn||activeSpawn.item.id!==item.id)return;
+      activeSpawn=null;
+      await sendBotMsg(bot,channelId,`⏰ ${lang==='en'?'Time is up':'Tiempo agotado'}. ${lang==='en'?'It was':'Era'} **${item.icon||''} ${item.name}**!`);
+      addLog('warn',`${item.name} expiró.`);
+      scheduleSpawn();
+    },timer*1000);
+    activeSpawn={item,channelId,expireTimeout};
+    scheduleSpawn();
+  }
+
+  function scheduleSpawn(){
+    clearTimeout(spawnTimer);
+    const ms=interval*60000;
+    const v=ms*.1;
+    const delay=ms+(Math.random()*v*2-v);
+    spawnTimer=setTimeout(()=>doSpawn(),delay);
+    addLog('info',`Próximo spawn en ~${Math.round(delay/60000)} min`);
+  }
+
+  doSpawn();
+
+  channels.forEach(channelId=>{
+    let first=true;
+    const unsub=window._fbOnChildAdded(window._fbRef('state/messages/'+channelId),async snap=>{
+      if(first){first=false;return;}
+      if(!snap.exists())return;
+      const msg=snap.val();
+      if(!msg||!msg.content)return;
+      if((msg.uid||'').startsWith('bot_'))return;
+      const txt=(msg.content||'').trim().toLowerCase();
+      if(txt===colCmd){
+        const snapCol=await fbGetSnap('botdata/captures/'+msg.uid+'/'+bot.uid);
+        const col=snapCol&&snapCol.exists()?Object.values(snapCol.val()||{}):[];
+        if(!col.length){await sendBotMsg(bot,channelId,`${msg.name||'Tú'} no tiene elementos todavía. Usa \`${cmd} [nombre]\` para conseguir uno!`);return;}
+        col.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+        const byRar=['legendary','epic','rare','uncommon','common'];
+        let reply=`Colección de ${msg.name||'usuario'} — ${col.length} elemento(s):\n`;
+        byRar.forEach(r=>{const its=col.filter(x=>x.rarity===r);if(!its.length)return;reply+='\n'+RARITY_NAMES[r]+': '+its.map(x=>(x.icon||'')+' '+x.name).join(', ');});
+        await sendBotMsg(bot,channelId,reply.trim());
+        return;
+      }
+      if(!activeSpawn||activeSpawn.channelId!==channelId)return;
+      if(!txt.startsWith(cmd+' '))return;
+      const guess=txt.slice(cmd.length+1).trim();
+      const correct=activeSpawn.item.name.toLowerCase();
+      if(guess===correct||(ismine&&guess===correct)){
+        clearTimeout(activeSpawn.expireTimeout);
+        const {item}=activeSpawn;activeSpawn=null;
+        await fbSet('botdata/captures/'+msg.uid+'/'+bot.uid+'/'+item.id,{itemId:item.id,name:item.name,icon:item.icon||'',rarity:item.rarity,caughtAt:Date.now(),userName:msg.name||''});
+        const won=`✨ ¡**${msg.name||'Alguien'}** ${ismine?'adivinó':'capturó'} **${item.icon||''} ${item.name}**!`;
+        await sendBotMsg(bot,channelId,won);
+        addLog('success',`${msg.name||'?'} ${ismine?'adivinó':'capturó'}: ${item.name}`);
+        scheduleSpawn();
+      }
+    });
+    runningListeners.push(()=>{try{unsub();}catch(e){}});
+  });
+}
+
+// ══════════════════════════════════════════
+// PERFIL
+// ══════════════════════════════════════════
+
+async function loadProfile(){
+  const uid=window._currentUid;if(!uid)return;
+  const snap=await fbGetSnap('state/users/'+uid);
+  const u=snap&&snap.exists()?snap.val():{};
+  document.getElementById('profile-name').value=u.name||window._auth?.currentUser?.displayName||'';
+  document.getElementById('profile-avatar').value=u.avatarUrl||'';
+  document.getElementById('profile-color').value=u.avatarColor||'#7c3aed';
+  const prev=document.getElementById('profile-preview');
+  if(prev){
+    const initials=(u.name||'U')[0].toUpperCase();
+    prev.style.background=u.avatarColor||'#7c3aed';
+    prev.innerHTML=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:`<span style="font-size:1.4rem;font-weight:800;color:#fff;">${initials}</span>`;
+  }
+  renderProfileServers();
+}
+
+function renderProfileServers(){
+  const el=document.getElementById('profile-servers-list');if(!el)return;
+  if(!myServers.length){el.innerHTML='<div style="color:var(--text-3);font-size:.82rem;">No administras ninguna comunidad todavía.</div>';return;}
+  el.innerHTML=myServers.map(s=>`
+    <div class="bot-card">
+      <div style="font-size:1.6rem;">${s.icon||'🖥️'}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="bot-name">${s.name}</div>
+        <div class="bot-meta">${(s.members||[]).length} miembro(s)</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="showPage('type-picker');switchSection('my-bots',document.getElementById('nav-create-bot'))">
+        + Añadir bot
+      </button>
+    </div>`).join('');
+}
+
+async function saveProfile(){
+  const uid=window._currentUid;if(!uid)return;
+  const name=document.getElementById('profile-name').value.trim();
+  const avatarUrl=document.getElementById('profile-avatar').value.trim();
+  const avatarColor=document.getElementById('profile-color').value;
+  if(!name){showToast('⚠️ El nombre no puede estar vacío');return;}
+  await fbSet('state/users/'+uid,{uid,name,avatarUrl,avatarColor,updatedAt:Date.now()});
+  document.getElementById('sidebar-name').textContent=name;
+  document.getElementById('sidebar-ava').textContent=name[0].toUpperCase();
+  showToast('✅ Perfil guardado');
+}
+
+// ══════════════════════════════════════════
+// TEMA
+// ══════════════════════════════════════════
+
+const DEFAULT_THEME={accent:'#7c3aed',bg:'#0b0b0f',panel:'#141420'};
+
+function applyThemePreview(){
+  const accent=document.getElementById('th-accent')?.value||DEFAULT_THEME.accent;
+  const bg=document.getElementById('th-bg')?.value||DEFAULT_THEME.bg;
+  const panel=document.getElementById('th-panel')?.value||DEFAULT_THEME.panel;
+  document.getElementById('th-accent-hex').value=accent;
+  document.getElementById('th-bg-hex').value=bg;
+  document.getElementById('th-panel-hex').value=panel;
+  document.documentElement.style.setProperty('--accent',accent);
+  document.documentElement.style.setProperty('--accent-h',darken(accent,15));
+  document.documentElement.style.setProperty('--accent-g',lighten(accent,20));
+  document.documentElement.style.setProperty('--accent-glow',accent+'33');
+  document.documentElement.style.setProperty('--bg-0',bg);
+  document.documentElement.style.setProperty('--bg-1',lighten(bg,5));
+  document.documentElement.style.setProperty('--bg-2',lighten(bg,10));
+  document.documentElement.style.setProperty('--bg-3',lighten(bg,16));
+  document.documentElement.style.setProperty('--bg-4',lighten(bg,22));
+  document.documentElement.style.setProperty('--bg-5',lighten(bg,30));
+  const bar=document.getElementById('th-preview-bar');
+  if(bar) bar.style.background=accent;
+}
+
+function syncColorFromHex(colorId, hexId){
+  const hex=document.getElementById(hexId)?.value||'';
+  if(/^#[0-9a-f]{6}$/i.test(hex)){
+    const el=document.getElementById(colorId);
+    if(el) el.value=hex;
+    applyThemePreview();
+  }
+}
+
+function lighten(hex,pct){
+  const n=parseInt(hex.replace('#',''),16);
+  const r=Math.min(255,((n>>16)&0xff)+Math.round(pct*2.55));
+  const g=Math.min(255,((n>>8)&0xff)+Math.round(pct*2.55));
+  const b=Math.min(255,(n&0xff)+Math.round(pct*2.55));
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+function darken(hex,pct){
+  const n=parseInt(hex.replace('#',''),16);
+  const r=Math.max(0,((n>>16)&0xff)-Math.round(pct*2.55));
+  const g=Math.max(0,((n>>8)&0xff)-Math.round(pct*2.55));
+  const b=Math.max(0,(n&0xff)-Math.round(pct*2.55));
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+function saveTheme(){
+  const accent=document.getElementById('th-accent')?.value||DEFAULT_THEME.accent;
+  const bg=document.getElementById('th-bg')?.value||DEFAULT_THEME.bg;
+  const panel=document.getElementById('th-panel')?.value||DEFAULT_THEME.panel;
+  const theme={novaTheme:true,version:1,accent,bg,panel,bgImage:''};
+  localStorage.setItem('nova_theme',JSON.stringify(theme));
+  showToast('✅ Tema guardado');
+}
+
+function loadSavedTheme(){
+  try{
+    const raw=localStorage.getItem('nova_theme');
+    if(!raw)return;
+    const t=JSON.parse(raw);
+    if(!t.novaTheme)return;
+    if(document.getElementById('th-accent')) document.getElementById('th-accent').value=t.accent||DEFAULT_THEME.accent;
+    if(document.getElementById('th-bg')) document.getElementById('th-bg').value=t.bg||DEFAULT_THEME.bg;
+    if(document.getElementById('th-panel')) document.getElementById('th-panel').value=t.panel||DEFAULT_THEME.panel;
+    applyThemePreview();
+  }catch(e){}
+}
+
+function resetTheme(){
+  if(document.getElementById('th-accent')) document.getElementById('th-accent').value=DEFAULT_THEME.accent;
+  if(document.getElementById('th-bg')) document.getElementById('th-bg').value=DEFAULT_THEME.bg;
+  if(document.getElementById('th-panel')) document.getElementById('th-panel').value=DEFAULT_THEME.panel;
+  applyThemePreview();
+  localStorage.removeItem('nova_theme');
+  showToast('Tema restablecido');
+}
+
+function exportTheme(){
+  const accent=document.getElementById('th-accent')?.value||DEFAULT_THEME.accent;
+  const bg=document.getElementById('th-bg')?.value||DEFAULT_THEME.bg;
+  const panel=document.getElementById('th-panel')?.value||DEFAULT_THEME.panel;
+  const blob=new Blob([JSON.stringify({novaTheme:true,version:1,accent,bg,panel,bgImage:''},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nova-tema.json';a.click();
+}
+
+function importThemeFile(e){
+  const file=e.target.files&&e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const t=JSON.parse(r.result);
+      if(!t.novaTheme){showToast('⚠️ Archivo de tema inválido');return;}
+      if(t.accent&&document.getElementById('th-accent')) document.getElementById('th-accent').value=t.accent;
+      if(t.bg&&document.getElementById('th-bg')) document.getElementById('th-bg').value=t.bg;
+      if(t.panel&&document.getElementById('th-panel')) document.getElementById('th-panel').value=t.panel;
+      applyThemePreview();showToast('✅ Tema importado');
+    }catch(er){showToast('⚠️ JSON inválido');}
+  };
+  r.readAsText(file);
+}
+
+// ══════════════════════════════════════════
+// OVERRIDE switchSection to load data on nav
+// ══════════════════════════════════════════
+const _origSwitchSection = switchSection;
+function switchSection(name, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  const sec=document.getElementById('sec-'+name);
+  if(sec) sec.classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+  if(name==='profile') loadProfile();
+  if(name==='theme') loadSavedTheme();
+}
+
+// Load saved theme on startup
+document.addEventListener('firebase-ready',()=>{
+  setTimeout(loadSavedTheme, 100);
+});
+
 </script>
 </body>
 </html>
