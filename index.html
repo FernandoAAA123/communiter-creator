@@ -364,11 +364,6 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
         Servidores
       </button>
-      <button class="nav-item" id="nav-admin-plugin-types" onclick="switchSection('admin-plugin-types',this)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4c0 1.1-.45 2.1-1.17 2.83L16 10h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1v4H7v-4H6a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2l1.17-1.17A4 4 0 0 1 8 6a4 4 0 0 1 4-4z"/></svg>
-        Tipos de plugin
-      </button>
-
       <div class="nav-section-label" style="margin-top:6px;">Perfil</div>
       <button class="nav-item" id="nav-profile" onclick="switchSection('profile',this)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -436,9 +431,6 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
             <p>Busca imagenes, paginas web o videos de YouTube con /img, /search y /yt.</p>
           </div>
         </div>
-        <div style="margin-bottom:8px;"><span style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);">Plugins Dex</span></div>
-        <div style="font-size:.78rem;color:var(--text-2);margin-bottom:12px;">Modos especiales de captura con configuración visual, instalados desde el panel de Admin. Sin necesidad de bot admin separado.</div>
-        <div class="type-grid" style="margin-bottom:22px;" id="plugin-type-cards"></div>
         <div style="margin-bottom:8px;"><span style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);">Adicionales</span></div>
         <div style="font-size:.78rem;color:var(--text-2);margin-bottom:12px;">Sube un archivo de código (.js) con la lógica del bot. Communiter Creator lo lee, lo trata como un tipo de bot normal, y lo ejecuta con el mismo motor que ya usan los demás — acá y en tu runner 24/7. No es una página web ni necesita dominio propio.</div>
         <div class="type-grid">
@@ -501,7 +493,7 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
           <div style="margin:18px 0;border-top:1px solid var(--border);"></div>
           <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);margin-bottom:10px;">Perfil del bot</div>
           <div class="form-grid">
-            <div class="form-group"><label>Nombre del bot *</label><input type="text" id="ex-name" placeholder="PanDex" class="fi"></div>
+            <div class="form-group"><label>Nombre del bot *</label><input type="text" id="ex-name" placeholder="Mi bot" class="fi"></div>
             <div class="form-group"><label>Avatar (URL, opcional)</label><input type="url" id="ex-avatar" placeholder="https://..." class="fi"></div>
             <div class="form-group"><label>Color</label><input type="color" id="ex-color" value="#2f6bff" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
             <div class="form-group"><label>Estado (opcional)</label><input type="text" id="ex-status" placeholder="Ej: Escaneando mensajes..." class="fi"></div>
@@ -521,26 +513,6 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
             <button class="btn btn-ghost" onclick="showPage('list')">Cancelar</button>
           </div>
         </div>
-      </div>
-
-      <!-- PAGE: PLUGIN DEX (mine / fight) -->
-      <div class="page" id="page-edit-plugin">
-        <button class="back-link" onclick="showPage('type-picker')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Volver
-        </button>
-        <div class="form-box" id="plugin-form-box">
-          <!-- Se rellena dinámicamente con renderPluginForm() -->
-        </div>
-        <!-- Catálogo visual -->
-        <div class="section-header" style="margin-top:20px;">
-          <div><h2 style="font-size:1.05rem;" id="plugin-catalog-title">Elementos cargados</h2></div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <span class="count-badge" id="plugin-item-count">0 elementos</span>
-            <button class="btn btn-primary btn-sm" onclick="openAddItemModal()">+ Añadir elemento</button>
-          </div>
-        </div>
-        <div style="margin-bottom:12px;"><input type="text" placeholder="Buscar elementos..." oninput="filterPluginCards(this.value)" style="background:var(--bg-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 14px;color:var(--text-0);font-family:var(--font);font-size:.875rem;outline:none;width:260px;"></div>
-        <div class="cards-grid" id="plugin-cards-grid"></div>
       </div>
 
       <!-- PAGE: BOT DE BUSQUEDA -->
@@ -699,37 +671,6 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
     </div>
 
     <!-- ══════════════════════════════════════════
-         SECCIÓN: ADMIN — TIPOS DE PLUGIN (instalables)
-    ══════════════════════════════════════════ -->
-    <div class="section" id="sec-admin-plugin-types">
-      <div class="section-header">
-        <div class="section-header-text">
-          <h2>Tipos de plugin instalables</h2>
-          <p>Dex híbridos (spawn + captura) como Mine o Fight-Catch. No vienen por defecto — los instalás acá cuando los necesites, sin tocar el código base.</p>
-        </div>
-      </div>
-      <div id="plugin-types-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;"></div>
-      <div class="form-box" style="max-width:560px;">
-        <h3 id="pt-form-title">Instalar tipo de plugin</h3>
-        <input type="hidden" id="pt-editing-id">
-        <div class="form-grid">
-          <div class="form-group"><label>ID único * (sin espacios, ej: plugin-mine)</label><input type="text" id="pt-id" class="fi" placeholder="plugin-mine"></div>
-          <div class="form-group"><label>Nombre visible *</label><input type="text" id="pt-label" class="fi" placeholder="Dex Mine"></div>
-          <div class="form-group"><label>Ícono (emoji)</label><input type="text" id="pt-icon" class="fi" placeholder="🔍"></div>
-          <div class="form-group"><label>Color</label><input type="color" id="pt-color" value="#a78bfa" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
-          <div class="form-group"><label>Comando de spawn/captura</label><input type="text" id="pt-cmd" class="fi" placeholder="/mine"></div>
-          <div class="form-group"><label>Comando de colección</label><input type="text" id="pt-colcmd" class="fi" placeholder="/coleccion"></div>
-          <div class="form-group full"><label>Descripción</label><textarea id="pt-desc" class="fi" rows="2" placeholder="Nombre oculto — el primero en adivinar en el tiempo límite lo gana."></textarea></div>
-          <div class="form-group full"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="pt-hidename" style="width:auto;"> Ocultar el nombre del elemento al aparecer (modo "adivinar", como Mine). Si no, muestra el nombre (modo "el primero en escribirlo gana", como Fight-Catch).</label></div>
-        </div>
-        <div class="form-actions">
-          <button class="btn btn-primary" onclick="savePluginTypeAdmin()">Guardar tipo de plugin</button>
-          <button class="btn btn-ghost" onclick="resetPluginTypeForm()">Cancelar</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══════════════════════════════════════════
          SECCIÓN: PERFIL
     ══════════════════════════════════════════ -->
     <div class="section" id="sec-profile">
@@ -821,79 +762,6 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
   </div><!-- /main -->
 </div><!-- /app -->
 
-<!-- MODAL: AÑADIR ELEMENTO AL PLUGIN -->
-<div class="modal-overlay" id="add-item-modal">
-  <div class="modal" style="max-width:520px;">
-    <button class="close-btn" onclick="document.getElementById('add-item-modal').classList.remove('open')">✕</button>
-    <h2 id="add-item-modal-title">Añadir elemento</h2>
-
-    <!-- ICON PREVIEW + PICKER -->
-    <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:16px;">
-      <!-- Big live preview -->
-      <div id="ai-icon-preview" style="width:72px;height:72px;border-radius:14px;background:var(--bg-3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2.4rem;flex-shrink:0;cursor:pointer;transition:border-color .15s;" onclick="toggleEmojiPicker()" title="Haz clic para elegir icono">❔</div>
-      <div style="flex:1;">
-        <div class="form-group" style="margin-bottom:8px;">
-          <label>Nombre *</label>
-          <input type="text" class="fi" id="ai-name" placeholder="Estrella dorada">
-        </div>
-        <!-- Manual emoji input row -->
-        <div style="display:flex;gap:8px;align-items:center;">
-          <input type="text" class="fi" id="ai-icon" placeholder="⭐ o escribe emoji" maxlength="8" style="font-size:1.1rem;text-align:center;width:110px;flex-shrink:0;" oninput="syncIconPreview(this.value)">
-          <button class="btn btn-ghost btn-sm" onclick="toggleEmojiPicker()" style="white-space:nowrap;">🎨 Elegir</button>
-          <button class="btn btn-ghost btn-sm" onclick="clearIcon()" style="color:var(--text-3);">✕ Quitar</button>
-        </div>
-        <div class="form-hint" style="margin-top:4px;">Aparece en spawns y en la colección del usuario.</div>
-      </div>
-    </div>
-
-    <!-- EMOJI PICKER PANEL (hidden by default) -->
-    <div id="emoji-picker-panel" style="display:none;background:var(--bg-1);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:14px;">
-      <!-- Category tabs -->
-      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px;" id="emoji-cats"></div>
-      <!-- Search -->
-      <input type="text" placeholder="Buscar emoji..." class="fi" id="emoji-search" oninput="filterEmojiGrid(this.value)" style="margin-bottom:8px;font-size:.85rem;">
-      <!-- Grid -->
-      <div id="emoji-grid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px;max-height:180px;overflow-y:auto;"></div>
-    </div>
-
-    <div class="form-grid">
-      <div class="form-group"><label>Rareza</label>
-        <select class="fi" id="ai-rarity" onchange="updateRarityPreview()">
-          <option value="common">○ Common — Común</option>
-          <option value="uncommon">◉ Uncommon — Poco común</option>
-          <option value="rare" selected>◈ Rare — Raro</option>
-          <option value="epic">◆ Epic — Épico</option>
-          <option value="legendary">★ Legendary — Legendario</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Peso (1–100)</label>
-        <input type="number" class="fi" id="ai-weight" value="40" min="1" max="100">
-        <div class="form-hint">Mayor peso = aparece más seguido.</div>
-      </div>
-      <div class="form-group full"><label>Descripción</label><textarea class="fi" id="ai-desc" rows="2" placeholder="Brilla en la oscuridad..."></textarea></div>
-      <div class="form-group full"><label>URL de imagen (opcional)</label>
-        <input type="url" class="fi" id="ai-img" placeholder="https://..." oninput="syncImgPreview(this.value)">
-        <div class="form-hint">Si tienes imagen, reemplaza al emoji en la card.</div>
-      </div>
-    </div>
-
-    <!-- Mini card preview -->
-    <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:4px;" id="ai-card-preview">
-      <div style="width:44px;height:44px;border-radius:10px;background:var(--bg-4);display:flex;align-items:center;justify-content:center;font-size:1.6rem;overflow:hidden;flex-shrink:0;" id="ai-preview-img">❔</div>
-      <div>
-        <div style="font-weight:700;color:var(--text-0);font-size:.9rem;" id="ai-preview-name">Nombre del elemento</div>
-        <div style="font-size:.72rem;color:var(--text-2);margin-top:1px;" id="ai-preview-rarity">◈ Rare</div>
-      </div>
-    </div>
-    <div class="form-hint" style="margin-bottom:14px;">Así se verá en la colección.</div>
-
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="document.getElementById('add-item-modal').classList.remove('open')">Cancelar</button>
-      <button class="btn btn-primary" onclick="confirmAddItem()">Guardar elemento</button>
-    </div>
-  </div>
-</div>
-
 <script>
 // ══════════════════════════════════════════
 // ADMIN UID — solo este usuario ve las secciones de admin con datos
@@ -909,9 +777,7 @@ let currentEditType = null, editingBotId = null;
 let selectedServers = new Set(), welcomeChannelChoice = {};
 let externalMode = 'file'; // 'file' | 'url'
 let currentExternalFile = null; // {name, content} cuando se sube un archivo HTML
-let currentPluginType = null; // 'plugin-mine' | 'plugin-fight'
-let currentPluginItems = []; // items del plugin
-let editingItemIndex = null; // para editar item existente
+
 let runningBot = null, runningListeners = [], lastKnownMembers = {};
 
 // ── ADMIN STATE ──
@@ -969,7 +835,6 @@ document.addEventListener('firebase-ready', ()=>{
       loadAll(); // carga datos admin
     }
     await loadMyServers();
-    await loadPluginTypes();
     loadMyBots();
   });
 });
@@ -997,7 +862,7 @@ async function loadMyServers(){
 }
 
 // Tipos de bot conocidos — cualquier tipo nuevo sólo necesita añadirse aquí
-const BOT_TYPES = ['welcome','dex','search','custom-code']; // los tipos de plugin son dinámicos (ver PLUGIN_DEFS)
+const BOT_TYPES = ['welcome','dex','search','custom-code'];
 
 // Datos de tipos huérfanos detectados al cargar (type -> count)
 let orphanedData = {};
@@ -1033,19 +898,16 @@ function renderMyBots(){
   const typeLabels={welcome:'Bienvenida',dex:'Dex',search:'Búsqueda','custom-code':'Código propio'};
   const typeColors={search:'#10b981','custom-code':'#3b82f6'};
   el.innerHTML=myBots.map(b=>{
-    const pdef=PLUGIN_DEFS[b.type]; // si b.type coincide con un tipo de plugin instalado
-    const label=pdef?pdef.label:(typeLabels[b.type]||b.type);
-    const customColor=pdef?pdef.color:typeColors[b.type];
+    const label=typeLabels[b.type]||b.type;
+    const customColor=typeColors[b.type];
     const badgeCls=customColor?'':'type-'+(b.type==='dex'?'dex':'welcome');
     const badgeStyle=customColor?`style="color:${customColor};border-color:${customColor}33;background:${customColor}11;"`:'';
     const meta=b.type==='custom-code'
       ?`📄 ${b.fileName||'código propio'} <span style="color:var(--text-3);">· ${(b.installedServers||[]).length} comunidad(es)</span>`
       :b.type==='search'
         ?`Comandos: ${b.imgCmd||'/img'} · ${b.searchCmd||'/search'} · ${b.ytCmd||'/yt'}`
-        :pdef
-          ?`${(b.items||[]).length} elementos · ${(b.installedServers||[]).length} comunidad(es) · cmd: ${b.spawnCmd||pdef.defaultCmd||'/catch'}`
-          :`${(b.installedServers||[]).length} comunidad${(b.installedServers||[]).length===1?'':'es'} activa${(b.installedServers||[]).length===1?'':'s'}${b.type==='dex'?' · '+(b.items||[]).length+' elementos':''}`;
-    const actionBtn=(pdef||b.type==='custom-code')
+        :`${(b.installedServers||[]).length} comunidad${(b.installedServers||[]).length===1?'':'es'} activa${(b.installedServers||[]).length===1?'':'s'}${b.type==='dex'?' · '+(b.items||[]).length+' elementos':''}`;
+    const actionBtn=(b.type==='custom-code')
         ?`<button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')" style="background:${customColor||'var(--accent)'};color:#fff;">▶ Activar</button>`
         :`<button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')">▶ Activar</button>`;
     const syncBtn=(['welcome','dex','search'].includes(b.type)&&!b.runtimeCode)
@@ -1109,13 +971,6 @@ function startCreate(type){
     selectedServers=new Set();welcomeChannelChoice={};
     renderServerPicker('cc-servers','cc');renderCustomCodeChannelPickers();
     showPage('edit-external');
-  } else if(PLUGIN_DEFS[type]){
-    currentPluginType=type;
-    currentPluginItems=[];
-    editingItemIndex=null;
-    renderPluginForm(null);
-    renderPluginCards();
-    showPage('edit-plugin');
   }
 }
 
@@ -1185,13 +1040,6 @@ function editBot(id){
     welcomeChannelChoice={...(b.customChannels||{})};
     renderServerPicker('cc-servers','cc');renderCustomCodeChannelPickers();
     showPage('edit-external');
-  } else if(PLUGIN_DEFS[b.type]){
-    currentPluginType=b.type;
-    currentPluginItems=[...(b.items||[])];
-    editingItemIndex=null;
-    renderPluginForm(b);
-    renderPluginCards();
-    showPage('edit-plugin');
   }
 }
 
@@ -2008,7 +1856,6 @@ async function runBot(id){
   window.addEventListener('beforeunload',_beforeUnloadHandler);
   if(bot.type==='dex') startDexBot(bot);
   else if(bot.type==='search') startSearchBot(bot);
-  else if(PLUGIN_DEFS[bot.type]) startPluginBot(bot);
   else if(bot.type==='custom-code') startCustomCodeBot(bot);
   else startWelcomeBot(bot);
 }
@@ -2249,534 +2096,14 @@ document.addEventListener('click',e=>{
   if(e.target.classList.contains('modal-overlay'))closeAdminModal(e.target.id);
 });
 
-// ══════════════════════════════════════════
-// PLUGIN BOT FUNCTIONS (Dex Mine / Fight-Catch)
-// ══════════════════════════════════════════
-
-// ══════════════════════════════════════════
-// PLUGIN BOT FUNCTIONS (tipos de plugin instalables)
-// ══════════════════════════════════════════
-// PLUGIN_DEFS ya NO está hardcodeado: se carga desde botdata/pluginTypes.
-// Así se pueden agregar/quitar tipos de plugin (Mine, Fight-Catch, futuros...)
-// sin tocar este HTML — se gestionan desde el panel de Admin ▸ Tipos de plugin.
-let PLUGIN_DEFS = {};
-
-async function loadPluginTypes(){
-  const snap = await fbGetSnap('botdata/pluginTypes');
-  PLUGIN_DEFS = snap.exists() ? snap.val() : {};
-  renderPluginTypeCards();
-  if(isAdmin) renderPluginTypesAdmin();
-}
-
-function renderPluginTypeCards(){
-  const el=document.getElementById('plugin-type-cards');if(!el)return;
-  const ids=Object.keys(PLUGIN_DEFS);
-  if(!ids.length){el.innerHTML='<div class="form-hint">No hay tipos de plugin instalados todavía. Un admin puede instalar uno desde Admin ▸ Tipos de plugin.</div>';return;}
-  el.innerHTML=ids.map(id=>{
-    const def=PLUGIN_DEFS[id];
-    return `<div class="type-card" onclick="startCreate('${id}')" style="border-color:${def.color}4d;">
-      <div class="tc-icon" style="color:${def.color};font-size:1.8rem;">${def.icon||'🧩'}</div>
-      <h3>${def.label} <span style="font-size:.68rem;font-weight:700;color:${def.color};background:${def.color}1f;border-radius:4px;padding:1px 6px;">PLUGIN</span></h3>
-      <p>${def.description||''}</p>
-    </div>`;
-  }).join('');
-}
-
-// ── ADMIN: instalar / editar / quitar tipos de plugin ──
-function renderPluginTypesAdmin(){
-  const el=document.getElementById('plugin-types-list');if(!el)return;
-  const ids=Object.keys(PLUGIN_DEFS);
-  if(!ids.length){el.innerHTML='<div class="form-hint">Ningún tipo de plugin instalado todavía.</div>';return;}
-  el.innerHTML=ids.map(id=>{
-    const def=PLUGIN_DEFS[id];
-    return `<div class="bot-card">
-      <div class="bot-ava" style="background:${def.color||'#2f6bff'};font-size:1.3rem;">${def.icon||'🧩'}</div>
-      <div style="flex:1;min-width:0;">
-        <div class="bot-name">${def.label} <span class="type-badge" style="color:${def.color};border-color:${def.color}33;background:${def.color}11;">${id}</span></div>
-        <div class="bot-meta">${def.hideName?'Oculta el nombre (modo adivinar)':'Muestra el nombre (el primero en escribirlo gana)'} · cmd: ${def.defaultCmd||'—'}</div>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="editPluginTypeAdmin('${id}')">Editar</button>
-      <button class="btn btn-danger btn-sm" onclick="deletePluginTypeAdmin('${id}')">Quitar</button>
-    </div>`;
-  }).join('');
-}
-function resetPluginTypeForm(){
-  document.getElementById('pt-editing-id').value='';
-  document.getElementById('pt-id').value='';
-  document.getElementById('pt-id').disabled=false;
-  document.getElementById('pt-label').value='';
-  document.getElementById('pt-icon').value='';
-  document.getElementById('pt-color').value='#a78bfa';
-  document.getElementById('pt-cmd').value='';
-  document.getElementById('pt-colcmd').value='/coleccion';
-  document.getElementById('pt-desc').value='';
-  document.getElementById('pt-hidename').checked=false;
-  document.getElementById('pt-form-title').textContent='Instalar tipo de plugin';
-}
-function editPluginTypeAdmin(id){
-  const def=PLUGIN_DEFS[id];if(!def)return;
-  document.getElementById('pt-editing-id').value=id;
-  document.getElementById('pt-id').value=id;
-  document.getElementById('pt-id').disabled=true; // el ID no se cambia una vez creado (bots existentes lo referencian)
-  document.getElementById('pt-label').value=def.label||'';
-  document.getElementById('pt-icon').value=def.icon||'';
-  document.getElementById('pt-color').value=def.color||'#a78bfa';
-  document.getElementById('pt-cmd').value=def.defaultCmd||'';
-  document.getElementById('pt-colcmd').value=def.defaultColCmd||'/coleccion';
-  document.getElementById('pt-desc').value=def.description||'';
-  document.getElementById('pt-hidename').checked=!!def.hideName;
-  document.getElementById('pt-form-title').textContent='Editar tipo de plugin';
-}
-async function savePluginTypeAdmin(){
-  const editingId=document.getElementById('pt-editing-id').value;
-  const id=(editingId||document.getElementById('pt-id').value.trim());
-  if(!id||!/^[a-z0-9_-]+$/i.test(id)){showToast('⚠️ ID inválido (solo letras, números, guiones)');return;}
-  if(!editingId&&PLUGIN_DEFS[id]){showToast('⚠️ Ya existe un tipo de plugin con ese ID');return;}
-  const label=document.getElementById('pt-label').value.trim();
-  if(!label){showToast('⚠️ Falta el nombre visible');return;}
-  const def={
-    id,label,
-    icon:document.getElementById('pt-icon').value.trim()||'🧩',
-    color:document.getElementById('pt-color').value||'#a78bfa',
-    hideName:document.getElementById('pt-hidename').checked,
-    defaultCmd:document.getElementById('pt-cmd').value.trim()||'/catch',
-    defaultColCmd:document.getElementById('pt-colcmd').value.trim()||'/coleccion',
-    cmdLabel:'Comando',
-    cmdPlaceholder:document.getElementById('pt-cmd').value.trim()||'/catch',
-    description:document.getElementById('pt-desc').value.trim()
-  };
-  await fbSet('botdata/pluginTypes/'+id,def);
-  PLUGIN_DEFS[id]=def;
-  renderPluginTypeCards();renderPluginTypesAdmin();resetPluginTypeForm();
-  showToast('✅ Tipo de plugin "'+label+'" instalado');
-}
-async function deletePluginTypeAdmin(id){
-  if(!confirm('¿Quitar el tipo de plugin "'+id+'"? Los bots ya creados con este tipo dejarán de poder activarse hasta que lo reinstales.'))return;
-  await fbRemove('botdata/pluginTypes/'+id);
-  delete PLUGIN_DEFS[id];
-  renderPluginTypeCards();renderPluginTypesAdmin();
-  showToast('🗑️ Tipo de plugin quitado');
-}
-
-function renderPluginForm(bot){
-  const def = PLUGIN_DEFS[currentPluginType]||{label:currentPluginType,icon:'🧩',color:'#2f6bff',description:'',defaultCmd:'/catch',defaultColCmd:'/coleccion',cmdLabel:'Comando',cmdPlaceholder:'/catch'};
-  const box = document.getElementById('plugin-form-box');
-  if(!box) return;
-  const title = document.getElementById('plugin-catalog-title');
-  if(title) title.textContent = def.label+' — Elementos cargados';
-  box.innerHTML = `
-    <h3 style="color:${def.color};">${def.icon} ${def.label} — Configuración</h3>
-    <div class="sub">${def.description}</div>
-    <div class="form-grid">
-      <div class="form-group"><label>Nombre del bot *</label><input type="text" id="pl-name" class="fi" placeholder="${def.label}" value="${(bot&&bot.name)||''}"></div>
-      <div class="form-group"><label>Avatar (URL)</label><input type="url" id="pl-avatar" class="fi" placeholder="https://..." value="${(bot&&bot.avatarUrl)||''}"></div>
-      <div class="form-group"><label>Color</label><input type="color" id="pl-color" value="${(bot&&bot.avatarColor)||def.color}" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
-      <div class="form-group"><label>Idioma</label>
-        <select id="pl-lang" class="fi">
-          <option value="es"${(!bot||bot.lang==='es')?' selected':''}>Español</option>
-          <option value="en"${(bot&&bot.lang==='en')?' selected':''}>English</option>
-        </select>
-      </div>
-      <div class="form-group"><label>${def.cmdLabel}</label><input type="text" id="pl-cmd" class="fi" placeholder="${def.cmdPlaceholder}" value="${(bot&&bot.spawnCmd)||def.defaultCmd}"></div>
-      <div class="form-group"><label>Comando de colección</label><input type="text" id="pl-colcmd" class="fi" placeholder="/coleccion" value="${(bot&&bot.collectionCmd)||def.defaultColCmd}"></div>
-      <div class="form-group"><label>Intervalo spawns (min)</label><input type="number" id="pl-interval" class="fi" value="${(bot&&bot.interval)||30}" min="1"></div>
-      <div class="form-group"><label>Segundos para adivinar</label><input type="number" id="pl-timer" class="fi" value="${(bot&&bot.captureTimer)||60}" min="5" max="300"></div>
-      <div class="form-group full"><label>¿En qué comunidades?</label><div class="server-pick" id="pl-servers"></div></div>
-      <div class="form-group full" id="pl-channel-pickers"></div>
-    </div>
-    <div class="form-actions">
-      <button class="btn btn-primary" onclick="savePluginBot()">Guardar bot</button>
-      <button class="btn btn-ghost" onclick="showPage('list')">Cancelar</button>
-    </div>`;
-  // Restore server selection if editing
-  if(bot) selectedServers = new Set(bot.installedServers||[]);
-  else selectedServers = new Set();
-  renderServerPicker('pl-servers','pl');
-  renderPluginChannelPickers();
-}
-
-function renderPluginChannelPickers(){
-  const el=document.getElementById('pl-channel-pickers');if(!el)return;
-  if(!selectedServers.size){el.innerHTML='';return;}
-  el.innerHTML=Array.from(selectedServers).map(srvId=>{
-    const srv=myServers.find(s=>s.id===srvId);if(!srv)return'';
-    const channels=getAllChannelsOf(srv);
-    const current=welcomeChannelChoice[srvId]||(channels[0]?.id||'');
-    welcomeChannelChoice[srvId]=current;
-    return`<div style="margin-bottom:10px;">
-      <label style="font-size:.78rem;color:var(--text-2);display:block;margin-bottom:5px;">Canal en <strong style="color:var(--text-0);">${srv.name}</strong></label>
-      <select onchange="welcomeChannelChoice['${srvId}']=this.value" style="width:100%;background:var(--bg-3);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text-0);font-family:var(--font);font-size:.85rem;outline:none;">
-        ${channels.map(ch=>`<option value="${ch.id}"${ch.id===current?' selected':''}>#${ch.name}</option>`).join('')}
-      </select></div>`;
-  }).join('');
-}
-
-function toggleServerChipForPlugin(srvId){
-  if(selectedServers.has(srvId))selectedServers.delete(srvId);else selectedServers.add(srvId);
-  renderServerPicker('pl-servers','pl');
-  renderPluginChannelPickers();
-}
-
-async function savePluginBot(){
-  const def = PLUGIN_DEFS[currentPluginType]||{label:currentPluginType,icon:'🧩',color:'#2f6bff',description:'',defaultCmd:'/catch',defaultColCmd:'/coleccion',cmdLabel:'Comando',cmdPlaceholder:'/catch'};
-  const name = (document.getElementById('pl-name')||{}).value?.trim();
-  if(!name){showToast('⚠️ Ponle un nombre al bot');return;}
-  if(!currentPluginItems.length){showToast('⚠️ Añade al menos un elemento antes de guardar');return;}
-  const id = editingBotId||('bot_'+currentPluginType.replace('plugin-','')+'_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+genId(5));
-  const spawnCmd = document.getElementById('pl-cmd').value.trim()||def.defaultCmd;
-  const collectionCmd = document.getElementById('pl-colcmd').value.trim()||def.defaultColCmd;
-  const bot = {
-    uid: id, name, type: currentPluginType, ownerId: window._currentUid,
-    avatarUrl: document.getElementById('pl-avatar').value.trim(),
-    avatarColor: document.getElementById('pl-color').value||def.color,
-    lang: document.getElementById('pl-lang').value||'es',
-    spawnCmd, collectionCmd,
-    interval: parseInt(document.getElementById('pl-interval').value)||30,
-    captureTimer: parseInt(document.getElementById('pl-timer').value)||60,
-    description: def.description,
-    botCommands: [spawnCmd+' [nombre] — '+def.description, collectionCmd+' — Ver tu colección'],
-    installedServers: [...selectedServers],
-    channels: {...welcomeChannelChoice},
-    items: currentPluginItems
-  };
-  await fbSet('botdata/bots/'+id, bot);
-  showToast('✅ Plugin guardado');
-  showPage('list');
-}
-
-function renderPluginCards(){
-  const grid = document.getElementById('plugin-cards-grid');
-  const countEl = document.getElementById('plugin-item-count');
-  if(countEl) countEl.textContent = currentPluginItems.length+' elementos';
-  if(!grid) return;
-  if(!currentPluginItems.length){
-    grid.innerHTML='<div class="empty"><p>Sin elementos. Haz clic en "+ Añadir elemento" para agregar.</p></div>';
-    return;
-  }
-  grid.innerHTML = currentPluginItems.map((it,i)=>{
-    return`<div class="card">
-      <div class="card-img">
-        <span class="card-num">#${String(i+1).padStart(3,'0')}</span>
-        ${it.imageUrl?`<img src="${it.imageUrl}" onerror="this.parentElement.innerHTML='${it.icon||'❔'}'">`:(it.icon||'❔')}
-      </div>
-      <div class="card-body">
-        <div class="card-name">${it.name}</div>
-        <div class="card-desc">${it.description||'Sin descripción.'}</div>
-        <div class="card-meta">
-          <span class="rarity-badge r-${it.rarity}">${RARITY_ICONS[it.rarity]} ${cap(it.rarity)}</span>
-          <span style="display:flex;gap:4px;">
-            <button class="btn btn-ghost btn-sm" onclick="editPluginItem(${i})" style="padding:3px 8px;">✏️</button>
-            <button class="btn btn-danger btn-sm" onclick="deletePluginItem(${i})" style="padding:3px 8px;">🗑</button>
-          </span>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function filterPluginCards(q){
-  const grid = document.getElementById('plugin-cards-grid');if(!grid)return;
-  const filtered = q ? currentPluginItems.filter(it=>it.name.toLowerCase().includes(q.toLowerCase())) : currentPluginItems;
-  grid.innerHTML = filtered.map((it,i)=>{
-    return`<div class="card"><div class="card-img"><span class="card-num">#${String(i+1).padStart(3,'0')}</span>${it.imageUrl?`<img src="${it.imageUrl}">`:(it.icon||'❔')}</div><div class="card-body"><div class="card-name">${it.name}</div><div class="card-desc">${it.description||''}</div><div class="card-meta"><span class="rarity-badge r-${it.rarity}">${RARITY_ICONS[it.rarity]} ${cap(it.rarity)}</span><button class="btn btn-danger btn-sm" onclick="deletePluginItem(${i})" style="padding:3px 8px;">🗑</button></div></div></div>`;
-  }).join('');
-}
-
-// ── EMOJI PICKER DATA ──
-const EMOJI_CATS = [
-  { label:'⭐ Objetos', emojis:['⭐','🌟','💫','✨','🔥','💎','🏆','👑','🎯','🎪','🎨','🎭','🎲','🎮','🕹️','🎁','🎀','🎗️','🏅','🥇','🥈','🥉','🔮','💰','💵','💴','💎','🧿','🪄','⚡','🌈','🌙','☀️','❄️','🌊','🍀','🌺','🌸','🌻','🌹','🦋','🐉','🦄','🦊','🐺','🐻','🦁','🐯','🦅','🦚','🦩','🦜'] },
-  { label:'⚔️ Acción', emojis:['⚔️','🗡️','🛡️','🏹','🔱','⚙️','🔧','🔩','🧲','🔬','🧬','💉','🧪','🔭','🚀','🛸','⚓','🧭','🗺️','🔑','🗝️','🔐','🔒','🔓','💣','🧨','🪓','🔫','🪃','🥊','🏋️','🤺','🎣','🏄','🧗','🤿','🎿','⛷️','🏇','🚵'] },
-  { label:'🌍 Naturaleza', emojis:['🌍','🌎','🌏','🗻','🏔️','⛰️','🌋','🏜️','🏝️','🌿','🍃','🌱','🌲','🌳','🌴','🍁','🍂','🍄','🌾','💐','🌷','🌺','🏵️','🌻','🌼','🌸','🌹','🥀','🌙','🌛','🌜','🌝','☀️','🌤️','⛅','🌧️','⛈️','🌩️','🌨️','❄️','☃️','⛄','🌊','💧','🔥','🌪️','🌈','☁️','⭐'] },
-  { label:'✨ Magia', emojis:['✨','🔮','🧿','🪄','🎩','🧙','🧝','🧚','🧜','🧛','🧟','👻','💀','☠️','🕯️','🪬','📿','🧲','🌀','💠','🔯','✡️','☯️','🌌','🪐','💫','⚡','🌟','🌠','🌃','🌉','🌁','🏰','🗼','🕌','⛪','🛕','🏯','⛩️','🗽'] },
-  { label:'💜 Rarezas', emojis:['💜','💙','💚','💛','🧡','❤️','🖤','🤍','🤎','💗','💓','💕','💞','💝','💖','💘','❣️','💔','🫀','❤️‍🔥','❤️‍🩹','♾️','⚜️','🔷','🔶','🔸','🔹','🔺','🔻','💠','🔘','⚫','⚪','🟤','🟠','🟡','🟢','🔵','🟣','🔴'] },
-];
-let _emojiCatIndex = 0;
-let _emojiOpen = false;
-
-function initEmojiPicker(){
-  const catsEl = document.getElementById('emoji-cats');
-  if(!catsEl||catsEl.children.length) return; // already init
-  EMOJI_CATS.forEach((cat,i)=>{
-    const btn = document.createElement('button');
-    btn.className='btn btn-ghost btn-sm';
-    btn.style.cssText='padding:4px 10px;font-size:.78rem;';
-    btn.textContent=cat.label;
-    btn.onclick=()=>{ _emojiCatIndex=i; renderEmojiGrid(); highlightCat(i); };
-    catsEl.appendChild(btn);
-  });
-  renderEmojiGrid();
-  highlightCat(0);
-}
-
-function highlightCat(idx){
-  const catsEl=document.getElementById('emoji-cats');if(!catsEl)return;
-  [...catsEl.children].forEach((b,i)=>{
-    b.style.background=i===idx?'var(--accent)':'';
-    b.style.color=i===idx?'#fff':'';
-    b.style.borderColor=i===idx?'var(--accent)':'';
-  });
-}
-
-function renderEmojiGrid(filter){
-  const grid=document.getElementById('emoji-grid');if(!grid)return;
-  const cat=EMOJI_CATS[_emojiCatIndex];
-  let emojis=cat.emojis;
-  if(filter){
-    const q=filter.toLowerCase();
-    emojis=EMOJI_CATS.flatMap(c=>c.emojis).filter((_,i)=>true); // all when searching
-    // simple search: just show all emojis when typing
-    emojis=EMOJI_CATS.flatMap(c=>c.emojis);
-  }
-  grid.innerHTML=emojis.map(e=>`<button onclick="pickEmoji('${e}')" style="background:none;border:none;font-size:1.4rem;cursor:pointer;padding:4px;border-radius:6px;line-height:1;transition:background .1s;" onmouseover="this.style.background='var(--bg-4)'" onmouseout="this.style.background='none'">${e}</button>`).join('');
-}
-
-function filterEmojiGrid(q){
-  const grid=document.getElementById('emoji-grid');if(!grid)return;
-  if(!q){renderEmojiGrid();return;}
-  const all=EMOJI_CATS.flatMap(c=>c.emojis);
-  grid.innerHTML=all.map(e=>`<button onclick="pickEmoji('${e}')" style="background:none;border:none;font-size:1.4rem;cursor:pointer;padding:4px;border-radius:6px;line-height:1;" onmouseover="this.style.background='var(--bg-4)'" onmouseout="this.style.background='none'">${e}</button>`).join('');
-}
-
-function toggleEmojiPicker(){
-  const panel=document.getElementById('emoji-picker-panel');if(!panel)return;
-  _emojiOpen=!_emojiOpen;
-  panel.style.display=_emojiOpen?'block':'none';
-  if(_emojiOpen){ initEmojiPicker(); document.getElementById('emoji-search').focus(); }
-}
-
-function pickEmoji(e){
-  document.getElementById('ai-icon').value=e;
-  syncIconPreview(e);
-  // close picker
-  _emojiOpen=false;
-  const panel=document.getElementById('emoji-picker-panel');
-  if(panel) panel.style.display='none';
-}
-
-function syncIconPreview(val){
-  const v=val||'❔';
-  const prev=document.getElementById('ai-icon-preview');
-  const prev2=document.getElementById('ai-preview-img');
-  const imgUrl=document.getElementById('ai-img')?.value?.trim();
-  if(prev) prev.textContent=v||'❔';
-  if(prev2&&!imgUrl) prev2.textContent=v||'❔';
-  updateItemPreview();
-}
-
-function syncImgPreview(url){
-  const prev2=document.getElementById('ai-preview-img');if(!prev2)return;
-  if(url){
-    prev2.innerHTML=`<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" onerror="this.parentElement.textContent='${document.getElementById('ai-icon')?.value||'❔'}'">`;
-  } else {
-    prev2.textContent=document.getElementById('ai-icon')?.value||'❔';
-  }
-}
-
-function clearIcon(){
-  document.getElementById('ai-icon').value='';
-  syncIconPreview('');
-  const prev=document.getElementById('ai-icon-preview');if(prev)prev.textContent='❔';
-}
-
-function updateRarityPreview(){
-  const r=document.getElementById('ai-rarity')?.value||'common';
-  const icons={common:'○',uncommon:'◉',rare:'◈',epic:'◆',legendary:'★'};
-  const labels={common:'Común',uncommon:'Poco común',rare:'Raro',epic:'Épico',legendary:'Legendario'};
-  const colors={common:'#c8c8e0',uncommon:'#10b981',rare:'#3b82f6',epic:'#a78bfa',legendary:'#f59e0b'};
-  const el=document.getElementById('ai-preview-rarity');
-  if(el){ el.textContent=icons[r]+' '+labels[r]; el.style.color=colors[r]||'var(--text-2)'; }
-}
-
-function updateItemPreview(){
-  const name=(document.getElementById('ai-name')?.value||'').trim()||'Nombre del elemento';
-  document.getElementById('ai-preview-name').textContent=name;
-  updateRarityPreview();
-}
-
-// Live update preview as user types name
-document.addEventListener('input', e=>{
-  if(e.target.id==='ai-name') updateItemPreview();
-  if(e.target.id==='ai-rarity') updateRarityPreview();
-});
-
-function openAddItemModal(){
-  editingItemIndex=null;
-  _emojiOpen=false;
-  const panel=document.getElementById('emoji-picker-panel');if(panel)panel.style.display='none';
-  document.getElementById('add-item-modal-title').textContent='Añadir elemento';
-  ['ai-name','ai-icon','ai-desc','ai-img'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('ai-rarity').value='rare';
-  document.getElementById('ai-weight').value='40';
-  const prev=document.getElementById('ai-icon-preview');if(prev)prev.textContent='❔';
-  const prev2=document.getElementById('ai-preview-img');if(prev2)prev2.textContent='❔';
-  document.getElementById('ai-preview-name').textContent='Nombre del elemento';
-  updateRarityPreview();
-  document.getElementById('add-item-modal').classList.add('open');
-  setTimeout(()=>document.getElementById('ai-name')?.focus(),50);
-}
-
-function editPluginItem(idx){
-  editingItemIndex=idx;
-  const it=currentPluginItems[idx];if(!it)return;
-  _emojiOpen=false;
-  const panel=document.getElementById('emoji-picker-panel');if(panel)panel.style.display='none';
-  document.getElementById('add-item-modal-title').textContent='Editar elemento';
-  document.getElementById('ai-name').value=it.name||'';
-  document.getElementById('ai-icon').value=it.icon||'';
-  document.getElementById('ai-rarity').value=it.rarity||'common';
-  document.getElementById('ai-weight').value=it.weight||40;
-  document.getElementById('ai-desc').value=it.description||'';
-  document.getElementById('ai-img').value=it.imageUrl||'';
-  // sync previews
-  const prev=document.getElementById('ai-icon-preview');if(prev)prev.textContent=it.icon||'❔';
-  syncImgPreview(it.imageUrl||'');
-  if(!it.imageUrl){const p2=document.getElementById('ai-preview-img');if(p2)p2.textContent=it.icon||'❔';}
-  document.getElementById('ai-preview-name').textContent=it.name||'Nombre del elemento';
-  updateRarityPreview();
-  document.getElementById('add-item-modal').classList.add('open');
-}
-
-function confirmAddItem(){
-  const name=(document.getElementById('ai-name').value||'').trim();
-  if(!name){showToast('⚠️ El nombre es obligatorio');return;}
-  const item={
-    id:(editingItemIndex!==null&&currentPluginItems[editingItemIndex]?.id)||('item_'+genId(8)),
-    name, icon:document.getElementById('ai-icon').value.trim()||'',
-    rarity:document.getElementById('ai-rarity').value||'common',
-    weight:Math.max(1,Math.min(100,parseInt(document.getElementById('ai-weight').value)||40)),
-    description:document.getElementById('ai-desc').value.trim()||'',
-    imageUrl:document.getElementById('ai-img').value.trim()||'',
-    addedAt:Date.now()
-  };
-  if(editingItemIndex!==null){
-    currentPluginItems[editingItemIndex]=item;
-    showToast('✅ Elemento actualizado');
-  } else {
-    currentPluginItems.push(item);
-    showToast('✅ Elemento añadido');
-  }
-  document.getElementById('add-item-modal').classList.remove('open');
-  renderPluginCards();
-}
-
-function deletePluginItem(idx){
-  if(!confirm('¿Eliminar este elemento?'))return;
-  currentPluginItems.splice(idx,1);
-  renderPluginCards();
-}
-
 // Patch toggleServerChip to also handle 'pl' prefix
 const _origToggleServerChip = toggleServerChip;
 function toggleServerChip(srvId,prefix){
   if(selectedServers.has(srvId))selectedServers.delete(srvId);else selectedServers.add(srvId);
   if(prefix==='w'){renderServerPicker('w-servers','w');renderWelcomeChannelPickers();}
   else if(prefix==='dx'){renderServerPicker('dx-servers','dx');renderDexChannelPickers('dx');}
-  else if(prefix==='pl'){renderServerPicker('pl-servers','pl');renderPluginChannelPickers();}
   else if(prefix==='sr'){renderServerPicker('sr-servers','sr');renderSearchChannelPickers();}
   else if(prefix==='cc'){renderServerPicker('cc-servers','cc');renderCustomCodeChannelPickers();}
-}
-
-// Plugin Bot Runtime — runs inside Communiter Creator (no separate HTML needed)
-function startPluginBot(bot){
-  const channels = Object.values(bot.channels||{}).filter(Boolean);
-  if(!channels.length){addLog('warn','No hay canales configurados para este plugin.');return;}
-  const pdef = PLUGIN_DEFS[bot.type]||{};
-  const ismine = !!pdef.hideName;
-  const cmd = (bot.spawnCmd||'/catch').toLowerCase().trim();
-  const colCmd = (bot.collectionCmd||'/coleccion').toLowerCase().trim();
-  const items = bot.items||[];
-  if(!items.length){addLog('warn','Este bot no tiene elementos.');return;}
-  const lang = bot.lang||'es';
-  const timer = bot.captureTimer||60;
-  const interval = bot.interval||30;
-  let activeSpawn = null;
-  let spawnTimer = null;
-  const RARITY_NAMES = lang==='en'
-    ?{common:'Common',uncommon:'Uncommon',rare:'Rare',epic:'Epic',legendary:'Legendary'}
-    :{common:'Común',uncommon:'Poco común',rare:'Raro',epic:'Épico',legendary:'Legendario'};
-
-  function pickItem(){
-    const total=items.reduce((s,it)=>s+(it.weight||60),0);
-    let r=Math.random()*total;
-    for(const it of items){r-=(it.weight||60);if(r<=0)return it;}
-    return items[items.length-1];
-  }
-
-  async function doSpawn(){
-    if(activeSpawn) return;
-    const channelId=channels[Math.floor(Math.random()*channels.length)];
-    const item=pickItem();if(!item)return;
-    const rarityLabel=RARITY_NAMES[item.rarity]||item.rarity;
-    let msg;
-    if(ismine){
-      msg=`🔍 **¡Algo misterioso ha aparecido!** (${rarityLabel})\n`;
-      if(item.icon) msg+=`[ ${item.icon} ??? ]\n`;
-      if(item.imageUrl) msg+=item.imageUrl+'\n';
-      msg+=`Escribe \`${cmd} [nombre]\` para identificarlo. ¡Tienes **${timer}s**!`;
-    } else {
-      msg=`⚔️ ¡Apareció **${item.icon||''} ${item.name}** (${rarityLabel})!\nEscribe \`${cmd} ${item.name}\` en **${timer}s**. ¡Solo el primero gana!`;
-      if(item.imageUrl) msg+='\n'+item.imageUrl;
-    }
-    await sendBotMsg(bot,channelId,msg);
-    addLog('warn',`Spawn: ${ismine?'???':item.name} (${rarityLabel})`);
-    const expireTimeout=setTimeout(async()=>{
-      if(!activeSpawn||activeSpawn.item.id!==item.id)return;
-      activeSpawn=null;
-      await sendBotMsg(bot,channelId,`⏰ ${lang==='en'?'Time is up':'Tiempo agotado'}. ${lang==='en'?'It was':'Era'} **${item.icon||''} ${item.name}**!`);
-      addLog('warn',`${item.name} expiró.`);
-      scheduleSpawn();
-    },timer*1000);
-    activeSpawn={item,channelId,expireTimeout};
-    scheduleSpawn();
-  }
-
-  function scheduleSpawn(){
-    clearTimeout(spawnTimer);
-    const ms=interval*60000;
-    const v=ms*.1;
-    const delay=ms+(Math.random()*v*2-v);
-    spawnTimer=setTimeout(()=>doSpawn(),delay);
-    addLog('info',`Próximo spawn en ~${Math.round(delay/60000)} min`);
-  }
-
-  doSpawn();
-
-  const pluginStartTs=Date.now();
-  channels.forEach(channelId=>{
-    const unsub=window._fbOnChildAdded(fbRef('state/messages/'+channelId),async snap=>{
-      if(!snap.exists())return;
-      const msg=snap.val();
-      if(!msg||!msg.content)return;
-      if((msg.ts||0)<pluginStartTs)return; // ignorar mensajes anteriores a la activación
-      if((msg.uid||'').startsWith('bot_'))return;
-      const txt=(msg.content||'').trim().toLowerCase();
-      if(txt===colCmd){
-        const snapCol=await fbGetSnap('botdata/captures/'+msg.uid+'/'+bot.uid);
-        const col=snapCol&&snapCol.exists()?Object.values(snapCol.val()||{}):[];
-        if(!col.length){await sendBotMsg(bot,channelId,`${msg.name||'Tú'} no tiene elementos todavía. Usa \`${cmd} [nombre]\` para conseguir uno!`);return;}
-        col.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
-        const byRar=['legendary','epic','rare','uncommon','common'];
-        let reply=`Colección de ${msg.name||'usuario'} — ${col.length} elemento(s):\n`;
-        byRar.forEach(r=>{const its=col.filter(x=>x.rarity===r);if(!its.length)return;reply+='\n'+RARITY_NAMES[r]+': '+its.map(x=>(x.icon||'')+' '+x.name).join(', ');});
-        await sendBotMsg(bot,channelId,reply.trim());
-        return;
-      }
-      if(!activeSpawn||activeSpawn.channelId!==channelId)return;
-      if(!txt.startsWith(cmd+' '))return;
-      const guess=txt.slice(cmd.length+1).trim();
-      const correct=activeSpawn.item.name.toLowerCase();
-      if(guess===correct||(ismine&&guess===correct)){
-        clearTimeout(activeSpawn.expireTimeout);
-        const {item}=activeSpawn;activeSpawn=null;
-        await fbSet('botdata/captures/'+msg.uid+'/'+bot.uid+'/'+item.id,{itemId:item.id,name:item.name,icon:item.icon||'',rarity:item.rarity,caughtAt:Date.now(),userName:msg.name||''});
-        const won=`✨ ¡**${msg.name||'Alguien'}** ${ismine?'adivinó':'capturó'} **${item.icon||''} ${item.name}**!`;
-        await sendBotMsg(bot,channelId,won);
-        addLog('success',`${msg.name||'?'} ${ismine?'adivinó':'capturó'}: ${item.name}`);
-        scheduleSpawn();
-      }
-    });
-    runningListeners.push(()=>{try{unsub();}catch(e){}});
-  });
 }
 
 // ══════════════════════════════════════════
