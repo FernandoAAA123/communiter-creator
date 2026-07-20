@@ -440,12 +440,12 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
         <div style="font-size:.78rem;color:var(--text-2);margin-bottom:12px;">Modos especiales de captura con configuración visual, instalados desde el panel de Admin. Sin necesidad de bot admin separado.</div>
         <div class="type-grid" style="margin-bottom:22px;" id="plugin-type-cards"></div>
         <div style="margin-bottom:8px;"><span style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);">Adicionales</span></div>
-        <div style="font-size:.78rem;color:var(--text-2);margin-bottom:12px;">Sube el archivo HTML de un bot ya construido (o pega su URL pública). Communiter Creator lo reconoce y lo ejecuta embebido dentro de sí mismo mientras esté "Activado" — no se abre ninguna pestaña externa.</div>
+        <div style="font-size:.78rem;color:var(--text-2);margin-bottom:12px;">Sube un archivo de código (.js) con la lógica del bot. Communiter Creator lo lee, lo trata como un tipo de bot normal, y lo ejecuta con el mismo motor que ya usan los demás — acá y en tu runner 24/7. No es una página web ni necesita dominio propio.</div>
         <div class="type-grid">
-          <div class="type-card" onclick="startCreate('external')" style="border-color:rgba(59,130,246,.2);">
-            <div class="tc-icon" style="color:#3b82f6;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
-            <h3>Bot personalizado <span style="font-size:.68rem;font-weight:700;color:#3b82f6;background:rgba(59,130,246,.1);border-radius:4px;padding:1px 5px;">ARCHIVO / URL</span></h3>
-            <p>Sube el archivo HTML del bot o pega su URL. Corre dentro de Communiter Creator, no en pestaña aparte.</p>
+          <div class="type-card" onclick="startCreate('custom-code')" style="border-color:rgba(59,130,246,.2);">
+            <div class="tc-icon" style="color:#3b82f6;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+            <h3>Bot con código propio <span style="font-size:.68rem;font-weight:700;color:#3b82f6;background:rgba(59,130,246,.1);border-radius:4px;padding:1px 5px;">.JS</span></h3>
+            <p>Sube o escribí un script que use la API de bots (ctx). Corre igual acá que en Railway.</p>
           </div>
         </div>
       </div>
@@ -473,37 +473,51 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
 
       <!-- PAGE: BOT PERSONALIZADO / EXTERNO -->
       <!-- PAGE: BOT PERSONALIZADO -->
+      <!-- PAGE: BOT CON CÓDIGO PROPIO -->
       <div class="page" id="page-edit-external">
         <button class="back-link" onclick="showPage('type-picker')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Volver
         </button>
         <div class="form-box">
-          <h3 style="color:#3b82f6;">Bot personalizado</h3>
-          <div class="sub">Sube el archivo HTML del bot (o pega su URL pública). Communiter Creator lo carga embebido dentro de sí mismo cuando lo "Activás" — no se abre ninguna pestaña ni ventana nueva.</div>
+          <h3 style="color:#3b82f6;">Bot con código propio</h3>
+          <div class="sub">Sube o escribí un script (.js) que use la API de bots (<code>ctx</code>). Corre igual acá en Communiter Creator que en tu runner 24/7 de Railway — no es una página web, no necesita dominio ni hosting propio.</div>
           <div class="form-group">
-            <label>Origen del bot *</label>
+            <label>Origen del código *</label>
             <div class="tab-bar" style="margin-bottom:0;">
-              <button type="button" class="tab-btn active" id="ex-mode-file" onclick="setExternalMode('file')">📄 Archivo</button>
-              <button type="button" class="tab-btn" id="ex-mode-url" onclick="setExternalMode('url')">🔗 URL</button>
+              <button type="button" class="tab-btn active" id="ex-mode-file" onclick="setExternalMode('file')">📄 Subir archivo</button>
+              <button type="button" class="tab-btn" id="ex-mode-url" onclick="setExternalMode('url')">✏️ Escribir código</button>
             </div>
           </div>
           <div class="form-group" id="ex-file-group">
-            <label>Archivo HTML del bot *</label>
-            <input type="file" id="ex-file" accept=".html,.htm,text/html" class="fi" onchange="handleExternalFile(event)">
-            <div class="form-hint" id="ex-file-status">Selecciona el archivo .html del bot.</div>
+            <label>Archivo .js del bot *</label>
+            <input type="file" id="ex-file" accept=".js,text/javascript,application/javascript" class="fi" onchange="handleExternalFile(event)">
+            <div class="form-hint" id="ex-file-status">Selecciona el archivo .js del bot.</div>
           </div>
           <div class="form-group" id="ex-url-group" style="display:none;">
-            <label>URL del bot *</label>
-            <input type="url" id="ex-url" placeholder="https://tu-usuario.github.io/pandex.html" class="fi">
-            <div class="form-hint">URL pública del archivo HTML del bot. Algunos sitios bloquean ser embebidos (X-Frame-Options) — si eso pasa, usa la opción de Archivo.</div>
+            <label>Código del bot *</label>
+            <textarea id="ex-code" class="fi" rows="10" style="font-family:monospace;font-size:.8rem;" placeholder="ctx.listenChannel(ctx.bot.customChannels['ID_DEL_SERVIDOR'], async msg => {&#10;  if (msg.content === '/hola') await ctx.sendMsg(msg.channelId, '¡Hola!');&#10;});&#10;ctx.setPresence();"></textarea>
+            <div class="form-hint">Ver <a href="#" onclick="showCtxDocsModal();return false;" style="color:#3b82f6;">qué funciones tiene <code>ctx</code> disponibles →</a></div>
           </div>
-          <div class="form-group"><label>Nombre del bot *</label><input type="text" id="ex-name" placeholder="PanDex" class="fi"></div>
-          <div class="form-group"><label>Avatar (URL, opcional)</label><input type="url" id="ex-avatar" placeholder="https://..." class="fi"></div>
-          <div class="form-group"><label>Color</label><input type="color" id="ex-color" value="#3b82f6" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
-          <div class="form-group"><label>Descripcion (opcional)</label><textarea id="ex-desc" class="fi" rows="2"></textarea></div>
-          <div class="form-group"><label>Comandos (opcional, uno por linea)</label><textarea id="ex-cmds" class="fi" rows="3" placeholder="/cmd - Descripcion"></textarea></div>
+          <div style="margin:18px 0;border-top:1px solid var(--border);"></div>
+          <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);margin-bottom:10px;">Perfil del bot</div>
+          <div class="form-grid">
+            <div class="form-group"><label>Nombre del bot *</label><input type="text" id="ex-name" placeholder="PanDex" class="fi"></div>
+            <div class="form-group"><label>Avatar (URL, opcional)</label><input type="url" id="ex-avatar" placeholder="https://..." class="fi"></div>
+            <div class="form-group"><label>Color</label><input type="color" id="ex-color" value="#2f6bff" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
+            <div class="form-group"><label>Estado (opcional)</label><input type="text" id="ex-status" placeholder="Ej: Escaneando mensajes..." class="fi"></div>
+            <div class="form-group full"><label>Descripción (opcional)</label><textarea id="ex-desc" class="fi" rows="2"></textarea></div>
+            <div class="form-group full"><label>Comandos (opcional, uno por línea — solo para mostrar en el perfil)</label><textarea id="ex-cmds" class="fi" rows="3" placeholder="/cmd - Descripción"></textarea></div>
+          </div>
+          <div style="margin:18px 0;border-top:1px solid var(--border);"></div>
+          <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);margin-bottom:10px;">Comunidades</div>
+          <div class="form-group">
+            <label>¿En qué servidores corre?</label>
+            <div class="server-chips" id="cc-servers"></div>
+          </div>
+          <div id="cc-channel-pickers"></div>
+          <div class="form-hint">El canal elegido queda disponible en tu código como <code>ctx.bot.customChannels['ID_DEL_SERVIDOR']</code>.</div>
           <div class="form-actions">
-            <button class="btn btn-primary" onclick="saveBot('external')">Guardar bot</button>
+            <button class="btn btn-primary" onclick="saveBot('custom-code')">Guardar bot</button>
             <button class="btn btn-ghost" onclick="showPage('list')">Cancelar</button>
           </div>
         </div>
@@ -623,7 +637,6 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
             <button class="btn btn-danger btn-sm" onclick="stopAndGoBack()">⏸ Detener y volver</button>
           </div>
         </div>
-        <div id="run-external-holder" style="margin-bottom:10px;"></div>
         <div class="log-scroll" id="run-log"></div>
         <div class="form-hint" style="margin-top:10px;">Para detener el bot por completo, cierra o recarga esta pestaña.</div>
       </div>
@@ -984,7 +997,7 @@ async function loadMyServers(){
 }
 
 // Tipos de bot conocidos — cualquier tipo nuevo sólo necesita añadirse aquí
-const BOT_TYPES = ['welcome','dex','search','external']; // los tipos de plugin son dinámicos (ver PLUGIN_DEFS)
+const BOT_TYPES = ['welcome','dex','search','custom-code']; // los tipos de plugin son dinámicos (ver PLUGIN_DEFS)
 
 // Datos de tipos huérfanos detectados al cargar (type -> count)
 let orphanedData = {};
@@ -1017,22 +1030,22 @@ function renderMyBots(){
     el.innerHTML=`<div class="empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 15h.01M16 15h.01"/></svg><p>Aún no has creado ningún bot.<br>Haz clic en "Crear bot" para empezar.</p></div>`;
     return;
   }
-  const typeLabels={welcome:'Bienvenida',dex:'Dex',search:'Búsqueda',external:'Personalizado'};
-  const typeColors={search:'#10b981',external:'#3b82f6'};
+  const typeLabels={welcome:'Bienvenida',dex:'Dex',search:'Búsqueda','custom-code':'Código propio'};
+  const typeColors={search:'#10b981','custom-code':'#3b82f6'};
   el.innerHTML=myBots.map(b=>{
     const pdef=PLUGIN_DEFS[b.type]; // si b.type coincide con un tipo de plugin instalado
     const label=pdef?pdef.label:(typeLabels[b.type]||b.type);
     const customColor=pdef?pdef.color:typeColors[b.type];
     const badgeCls=customColor?'':'type-'+(b.type==='dex'?'dex':'welcome');
     const badgeStyle=customColor?`style="color:${customColor};border-color:${customColor}33;background:${customColor}11;"`:'';
-    const meta=b.type==='external'
-      ?(b.fileContent?`📄 ${b.fileName||'archivo.html'} <span style="color:var(--text-3);">(embebido en Studio)</span>`:`🔗 ${b.externalUrl||'Sin URL'} <span style="color:var(--text-3);">(embebido en Studio)</span>`)
+    const meta=b.type==='custom-code'
+      ?`📄 ${b.fileName||'código propio'} <span style="color:var(--text-3);">· ${(b.installedServers||[]).length} comunidad(es)</span>`
       :b.type==='search'
         ?`Comandos: ${b.imgCmd||'/img'} · ${b.searchCmd||'/search'} · ${b.ytCmd||'/yt'}`
         :pdef
           ?`${(b.items||[]).length} elementos · ${(b.installedServers||[]).length} comunidad(es) · cmd: ${b.spawnCmd||pdef.defaultCmd||'/catch'}`
           :`${(b.installedServers||[]).length} comunidad${(b.installedServers||[]).length===1?'':'es'} activa${(b.installedServers||[]).length===1?'':'s'}${b.type==='dex'?' · '+(b.items||[]).length+' elementos':''}`;
-    const actionBtn=(pdef||b.type==='external')
+    const actionBtn=(pdef||b.type==='custom-code')
         ?`<button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')" style="background:${customColor||'var(--accent)'};color:#fff;">▶ Activar</button>`
         :`<button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')">▶ Activar</button>`;
     const syncBtn=(['welcome','dex','search'].includes(b.type)&&!b.runtimeCode)
@@ -1086,13 +1099,15 @@ function startCreate(type){
     renderServerPicker('sr-servers','sr');
     renderSearchChannelPickers();
     showPage('edit-search');
-  } else if(type==='external'){
-    ['ex-name','ex-url','ex-avatar','ex-desc','ex-cmds'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('ex-color').value='#3b82f6';
+  } else if(type==='custom-code'){
+    ['ex-name','ex-code','ex-avatar','ex-desc','ex-cmds','ex-status'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('ex-color').value='#2f6bff';
     document.getElementById('ex-file').value='';
     currentExternalFile=null;
-    document.getElementById('ex-file-status').textContent='Selecciona el archivo .html del bot.';
+    document.getElementById('ex-file-status').textContent='Selecciona el archivo .js del bot.';
     setExternalMode('file');
+    selectedServers=new Set();welcomeChannelChoice={};
+    renderServerPicker('cc-servers','cc');renderCustomCodeChannelPickers();
     showPage('edit-external');
   } else if(PLUGIN_DEFS[type]){
     currentPluginType=type;
@@ -1148,24 +1163,27 @@ function editBot(id){
     document.getElementById('sr-ytcmd').value=b.ytCmd||'/yt';
     renderServerPicker('sr-servers','sr');renderSearchChannelPickers();
     showPage('edit-search');
-  } else if(b.type==='external'){
+  } else if(b.type==='custom-code'){
     document.getElementById('ex-name').value=b.name||'';
     document.getElementById('ex-avatar').value=b.avatarUrl||'';
-    document.getElementById('ex-color').value=b.avatarColor||'#3b82f6';
+    document.getElementById('ex-color').value=b.avatarColor||'#2f6bff';
+    document.getElementById('ex-status').value=b.customStatus||'';
     document.getElementById('ex-desc').value=b.description||'';
     document.getElementById('ex-cmds').value=(b.botCommands||[]).join('\n');
     document.getElementById('ex-file').value='';
+    document.getElementById('ex-code').value=b.runtimeCode||'';
     if(b.fileContent){
-      currentExternalFile={name:b.fileName||'bot.html',content:b.fileContent};
-      document.getElementById('ex-url').value='';
+      currentExternalFile={name:b.fileName||'bot.js',content:b.fileContent};
       setExternalMode('file');
-      document.getElementById('ex-file-status').innerHTML=`<span style="color:var(--green)">✅ ${b.fileName||'bot.html'} (guardado)</span> — sube otro archivo para reemplazarlo.`;
+      document.getElementById('ex-file-status').innerHTML=`<span style="color:var(--green)">✅ ${b.fileName||'bot.js'} (guardado)</span> — sube otro archivo para reemplazarlo.`;
     } else {
       currentExternalFile=null;
-      document.getElementById('ex-url').value=b.externalUrl||'';
       setExternalMode('url');
-      document.getElementById('ex-file-status').textContent='Selecciona el archivo .html del bot.';
+      document.getElementById('ex-file-status').textContent='Selecciona el archivo .js del bot.';
     }
+    selectedServers=new Set(b.installedServers||[]);
+    welcomeChannelChoice={...(b.customChannels||{})};
+    renderServerPicker('cc-servers','cc');renderCustomCodeChannelPickers();
     showPage('edit-external');
   } else if(PLUGIN_DEFS[b.type]){
     currentPluginType=b.type;
@@ -1205,6 +1223,23 @@ function renderWelcomeChannelPickers(){
   }).join('');
 }
 
+function renderCustomCodeChannelPickers(){
+  const el=document.getElementById('cc-channel-pickers');
+  if(!el)return;
+  if(!selectedServers.size){el.innerHTML='';return;}
+  el.innerHTML=[...selectedServers].map(srvId=>{
+    const srv=myServers.find(s=>s.id===srvId);if(!srv)return'';
+    const channels=getAllChannelsOf(srv);
+    const current=welcomeChannelChoice[srvId]||(channels[0]?.id||'');
+    welcomeChannelChoice[srvId]=current;
+    return`<div style="margin-bottom:10px;">
+      <label style="font-size:.78rem;color:var(--text-2);display:block;margin-bottom:5px;">Canal en <strong style="color:var(--text-0);">${srv.name}</strong></label>
+      <select onchange="welcomeChannelChoice['${srvId}']=this.value" style="width:100%;background:var(--bg-3);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text-0);font-family:var(--font);font-size:.85rem;outline:none;">
+        ${channels.map(ch=>`<option value="${ch.id}"${ch.id===current?' selected':''}>#${ch.name}</option>`).join('')}
+      </select></div>`;
+  }).join('');
+}
+
 function setExternalMode(mode){
   externalMode=mode;
   document.getElementById('ex-mode-file').classList.toggle('active',mode==='file');
@@ -1216,9 +1251,9 @@ function setExternalMode(mode){
 function handleExternalFile(ev){
   const file=ev.target.files&&ev.target.files[0];
   const status=document.getElementById('ex-file-status');
-  if(!file){currentExternalFile=null;status.textContent='Selecciona el archivo .html del bot.';return;}
-  if(!/\.(html?|HTML?)$/.test(file.name)){
-    status.innerHTML='<span style="color:var(--red)">⚠️ Debe ser un archivo .html</span>';
+  if(!file){currentExternalFile=null;status.textContent='Selecciona el archivo .js del bot.';return;}
+  if(!/\.js$/i.test(file.name)){
+    status.innerHTML='<span style="color:var(--red)">⚠️ Debe ser un archivo .js</span>';
     currentExternalFile=null;ev.target.value='';return;
   }
   const reader=new FileReader();
@@ -1364,30 +1399,32 @@ function genRuntimeCode_search(bot){
 }
 async function saveBot(type){
 
-  if(type==='external'){
+  if(type==='custom-code'){
     const name=document.getElementById('ex-name').value.trim();
     if(!name){showToast('⚠️ Ponle un nombre al bot');return;}
-    const id=editingBotId||('bot_ext_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+genId(5));
+    const id=editingBotId||('bot_cc_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+genId(5));
     const cmds=document.getElementById('ex-cmds').value.trim().split('\n').filter(Boolean);
-    const bot={uid:id,name,type:'external',ownerId:window._currentUid,
-      avatarUrl:document.getElementById('ex-avatar').value.trim(),
-      avatarColor:document.getElementById('ex-color').value||'#3b82f6',
-      description:document.getElementById('ex-desc').value.trim()||'Bot externo',
-      botCommands:cmds,installedServers:[]};
+    let code='';
     if(externalMode==='file'){
-      if(!currentExternalFile){showToast('⚠️ Sube el archivo HTML del bot');return;}
-      bot.fileName=currentExternalFile.name;
-      bot.fileContent=currentExternalFile.content;
-      bot.externalUrl='';
+      if(!currentExternalFile){showToast('⚠️ Sube el archivo .js del bot');return;}
+      code=currentExternalFile.content;
     } else {
-      const url=document.getElementById('ex-url').value.trim();
-      if(!url){showToast('⚠️ Ingresa la URL del bot');return;}
-      bot.externalUrl=url;
-      bot.fileName='';
-      bot.fileContent='';
+      code=document.getElementById('ex-code').value;
+      if(!code.trim()){showToast('⚠️ Escribe el código del bot');return;}
     }
+    const bot={uid:id,name,type:'custom-code',ownerId:window._currentUid,
+      avatarUrl:document.getElementById('ex-avatar').value.trim(),
+      avatarColor:document.getElementById('ex-color').value||'#2f6bff',
+      customStatus:document.getElementById('ex-status').value.trim(),
+      description:document.getElementById('ex-desc').value.trim()||'Bot con código propio',
+      botCommands:cmds,
+      installedServers:[...selectedServers],
+      customChannels:{...welcomeChannelChoice},
+      fileName:currentExternalFile?.name||'',
+      fileContent:currentExternalFile?.content||'',
+      runtimeCode:code};
     await fbSet('botdata/bots/'+id,bot);
-    showToast('✅ Bot externo registrado');showPage('list');return;
+    showToast('✅ Bot guardado');showPage('list');return;
   }
   if(type==='search'){
     const name=document.getElementById('sr-name').value.trim();
@@ -1470,35 +1507,153 @@ async function deleteBotMaker(id){
   showToast('🗑️ Bot eliminado');
 }
 
-function runExternalBot(bot){
-  const holder=document.getElementById('run-external-holder');
-  if(!holder){addLog('error','No se encontró el contenedor del bot personalizado.');return;}
-  holder.innerHTML='';
-  if(!bot.fileContent&&!bot.externalUrl){
-    addLog('error','Este bot no tiene archivo ni URL configurados. Edítalo para agregarlo.');
+// ══════════════════════════════════════════
+// CTX PARA EL NAVEGADOR — mismo contrato que buildCtx() en el index.js de Railway.
+// Así, el mismo archivo .js que un bot usa acá corre igual, sin cambios, en el
+// runner 24/7. Si agregás una función nueva acá, agregala también en Railway.
+// ══════════════════════════════════════════
+function buildCtxBrowser(bot,stopSelf){
+  const listeners=[];
+
+  async function sendMsg(channelId,content){
+    if(!channelId||!content)return;
+    const id='msg'+genId(12);
+    await fbSet('state/messages/'+channelId+'/'+id,{
+      id,uid:bot.uid,name:bot.name,color:bot.avatarColor||'#2f6bff',
+      avatarUrl:bot.avatarUrl||'',content,ts:Date.now(),
+      reactions:[],pinned:false,edited:false,
+    });
+  }
+
+  function listenChannel(channelId,callback){
+    let ready=false;
+    const unsub=window._fbOnChildAdded(fbRef('state/messages/'+channelId),snap=>{
+      if(!ready)return;
+      if(!snap.exists())return;
+      const msg=snap.val();
+      if(!msg||!msg.content)return;
+      if((msg.uid||'').startsWith('bot_'))return;
+      callback(msg);
+    });
+    setTimeout(()=>{ready=true;},1500);
+    const cancel=()=>{try{unsub();}catch(e){}};
+    listeners.push(cancel);
+    return cancel;
+  }
+
+  async function dbGet(path){
+    const snap=await fbGetSnap(path);
+    return snap&&snap.exists()?snap.val():null;
+  }
+  async function dbSet(path,value){ await fbSet(path,value); }
+
+  function dbListen(path,callback){
+    const unsub=window._fbOnValue(fbRef(path),snap=>callback(snap.exists()?snap.val():null));
+    const cancel=()=>{try{unsub();}catch(e){}};
+    listeners.push(cancel);
+    return cancel;
+  }
+
+  async function setPresence(customStatus){
+    await fbSet('presence/'+bot.uid,{
+      uid:bot.uid,name:bot.name,avatarUrl:bot.avatarUrl||'',
+      avatarColor:bot.avatarColor||'#2f6bff',status:'online',
+      customStatus:customStatus||bot.customStatus||'',isBot:true,ts:Date.now(),
+    });
+  }
+
+  function log(level,msg){ addLog(level==='error'?'error':level==='warn'?'warn':'info',msg); }
+
+  function pickItem(items){
+    if(!items||!items.length)return null;
+    const total=items.reduce((s,it)=>s+(it.weight||60),0);
+    let rand=Math.random()*total;
+    for(const it of items){rand-=(it.weight||60);if(rand<=0)return it;}
+    return items[items.length-1];
+  }
+
+  async function saveCapture(userId,item,num,userName){
+    await fbSet('botdata/captures/'+userId+'/'+bot.uid+'/'+item.id,{
+      itemId:item.id,name:item.name,icon:item.icon||'',rarity:item.rarity,
+      description:item.description||'',imageUrl:item.imageUrl||'',num:num||0,
+      caughtAt:Date.now(),userName:userName||'',
+    });
+  }
+
+  async function sendCollection(channelId,userId,userName){
+    const RARITY_ICONS2={common:'○',uncommon:'◉',rare:'◈',epic:'◆',legendary:'★'};
+    const RARITY_NAMES2={common:'Común',uncommon:'Poco común',rare:'Raro',epic:'Épico',legendary:'Legendario'};
+    const data=await dbGet('botdata/captures/'+userId+'/'+bot.uid);
+    if(!data){await sendMsg(channelId,(userName||'Tú')+' no tiene ningún elemento todavía.');return;}
+    const col=Object.values(data);
+    col.sort((a,b)=>(a.num||0)-(b.num||0));
+    let reply='📦 Colección de **'+(userName||'usuario')+'** — '+col.length+' elemento(s):\n';
+    ['legendary','epic','rare','uncommon','common'].forEach(r=>{
+      const its=col.filter(x=>x.rarity===r);if(!its.length)return;
+      reply+='\n'+RARITY_ICONS2[r]+' **'+(RARITY_NAMES2[r]||r)+':** '+its.map(x=>(x.icon||'')+' '+x.name).join(', ')+'\n';
+    });
+    await sendMsg(channelId,reply.trim());
+  }
+
+  function scheduleInterval(minutes,callback){
+    let timer;
+    function next(){
+      const ms=minutes*60000;
+      const jitter=ms*0.15;
+      const delay=ms+(Math.random()*jitter*2-jitter);
+      timer=setTimeout(()=>{callback();next();},delay);
+    }
+    next();
+    const cancel=()=>clearTimeout(timer);
+    listeners.push(cancel);
+    return cancel;
+  }
+
+  return {
+    bot,sendMsg,listenChannel,dbGet,dbSet,dbListen,
+    setPresence,log,pickItem,saveCapture,sendCollection,
+    scheduleInterval,
+    stop:()=>stopSelf(),
+    _cleanup:()=>listeners.forEach(fn=>{try{fn();}catch(e){}}),
+  };
+}
+
+function startCustomCodeBot(bot){
+  if(!bot.runtimeCode||!bot.runtimeCode.trim()){
+    addLog('error','Este bot no tiene código cargado. Edítalo para agregarlo.');
     return;
   }
-  const iframe=document.createElement('iframe');
-  iframe.id='external-bot-frame';
-  iframe.style.width='100%';
-  iframe.style.height='420px';
-  iframe.style.border='1px solid var(--border)';
-  iframe.style.borderRadius='10px';
-  iframe.style.background='#fff';
-  // sandbox: le damos scripts y same-origin (para que el bot pueda usar su propio Firebase si lo trae),
-  // pero no navegación de nivel superior ni popups.
-  iframe.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms');
-  if(bot.fileContent){
-    iframe.srcdoc=bot.fileContent;
-    addLog('info',`Cargando "${bot.fileName||'bot.html'}" embebido dentro de Communiter Creator…`);
-  } else {
-    iframe.src=bot.externalUrl;
-    addLog('info',`Cargando ${bot.externalUrl} embebido dentro de Communiter Creator…`);
+  const ctx=buildCtxBrowser(bot,()=>stopAndGoBack());
+  try{
+    new Function('ctx',bot.runtimeCode)(ctx);
+    runningListeners.push(()=>{try{ctx._cleanup();}catch(e){}});
+    addLog('success',`"${bot.name}" corriendo — este mismo código corre igual en tu runner de Railway.`);
+  }catch(e){
+    addLog('error','Error en el código del bot: '+e.message);
   }
-  iframe.onload=()=>addLog('success','Bot personalizado corriendo dentro de Communiter Creator (mientras esta pestaña esté abierta).');
-  iframe.onerror=()=>addLog('error','No se pudo cargar el bot. Si es una URL, puede que el sitio bloquee ser embebido (X-Frame-Options).');
-  holder.appendChild(iframe);
-  runningListeners.push(()=>{try{iframe.remove();}catch(e){}});
+}
+
+function showCtxDocsModal(){
+  const html=`<div class="modal-overlay open" id="ctx-docs-modal" style="z-index:9999;"><div class="modal" style="width:520px;max-height:80vh;overflow-y:auto;">
+    <button class="close-btn" onclick="document.getElementById('ctx-docs-modal').remove()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2>Funciones de <code>ctx</code></h2>
+    <p class="sub">Tu código recibe un objeto <code>ctx</code> con esto disponible. Es el mismo contrato en Communiter Creator y en Railway.</p>
+    <div style="font-family:monospace;font-size:.78rem;line-height:1.9;color:var(--text-1);">
+      <div><strong style="color:#3b82f6;">ctx.bot</strong> — objeto del bot (uid, name, installedServers, customChannels, etc.)</div>
+      <div><strong style="color:#3b82f6;">ctx.sendMsg(channelId, texto)</strong> — envía un mensaje como el bot</div>
+      <div><strong style="color:#3b82f6;">ctx.listenChannel(channelId, msg => {...})</strong> — escucha mensajes nuevos (ignora mensajes viejos y de otros bots)</div>
+      <div><strong style="color:#3b82f6;">ctx.dbGet(path)</strong> / <strong style="color:#3b82f6;">ctx.dbSet(path, valor)</strong> — leer/escribir en Firebase</div>
+      <div><strong style="color:#3b82f6;">ctx.dbListen(path, valor => {...})</strong> — escuchar cambios en vivo de una ruta</div>
+      <div><strong style="color:#3b82f6;">ctx.setPresence(estado)</strong> — marca al bot online con un estado opcional</div>
+      <div><strong style="color:#3b82f6;">ctx.log(nivel, mensaje)</strong> — 'info' | 'warn' | 'error' | 'success', aparece en el panel de logs</div>
+      <div><strong style="color:#3b82f6;">ctx.pickItem(items)</strong> — elige un ítem al azar respetando pesos (weight)</div>
+      <div><strong style="color:#3b82f6;">ctx.saveCapture(userId, item, num, userName)</strong> — guarda una captura tipo dex</div>
+      <div><strong style="color:#3b82f6;">ctx.sendCollection(channelId, userId, userName)</strong> — muestra la colección de alguien</div>
+      <div><strong style="color:#3b82f6;">ctx.scheduleInterval(minutos, callback)</strong> — repite algo cada X minutos (con variación aleatoria)</div>
+      <div><strong style="color:#3b82f6;">ctx.stop()</strong> — detiene el bot</div>
+    </div>
+  </div></div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
 }
 
 function renderSearchChannelPickers(){
@@ -1837,7 +1992,7 @@ async function runBot(id){
   } else if(bot.type==='search'){
     const srChs=Object.values(bot.searchChannels||{}).filter(Boolean);
     if(!srChs.length){showToast('⚠️ Configura al menos un canal para este bot (Editar)');return;}
-  } else if(bot.type!=='external'&&(!bot.installedServers||!bot.installedServers.length)){
+  } else if(bot.type!=='custom-code'&&(!bot.installedServers||!bot.installedServers.length)){
     showToast('⚠️ Activa este bot en al menos una comunidad (Editar)');return;
   }
   runningBot=bot;lastKnownMembers={};
@@ -1846,16 +2001,15 @@ async function runBot(id){
   ava.innerHTML=bot.avatarUrl?`<img src="${bot.avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`:(bot.name||'B')[0].toUpperCase();
   document.getElementById('run-name').textContent=bot.name;
   document.getElementById('run-log').innerHTML='';
-  const holder=document.getElementById('run-external-holder');if(holder)holder.innerHTML='';
   showPage('run');
-  const typeLabel={dex:'Dex',search:'Busqueda',welcome:'Bienvenida',external:'Personalizado'}[bot.type]||bot.type;
+  const typeLabel={dex:'Dex',search:'Busqueda',welcome:'Bienvenida','custom-code':'Código propio'}[bot.type]||bot.type;
   addLog('system',`${bot.name} iniciado (Bot ${typeLabel}).`);
-  await fbSet('presence/'+bot.uid,{uid:bot.uid,name:bot.name,avatarUrl:bot.avatarUrl||'',avatarColor:bot.avatarColor||'#2f6bff',status:'online',isBot:true,ts:Date.now()});
+  await fbSet('presence/'+bot.uid,{uid:bot.uid,name:bot.name,avatarUrl:bot.avatarUrl||'',avatarColor:bot.avatarColor||'#2f6bff',status:'online',customStatus:bot.customStatus||'',isBot:true,ts:Date.now()});
   window.addEventListener('beforeunload',_beforeUnloadHandler);
   if(bot.type==='dex') startDexBot(bot);
   else if(bot.type==='search') startSearchBot(bot);
   else if(PLUGIN_DEFS[bot.type]) startPluginBot(bot);
-  else if(bot.type==='external') runExternalBot(bot);
+  else if(bot.type==='custom-code') startCustomCodeBot(bot);
   else startWelcomeBot(bot);
 }
 
@@ -2519,6 +2673,7 @@ function toggleServerChip(srvId,prefix){
   else if(prefix==='dx'){renderServerPicker('dx-servers','dx');renderDexChannelPickers('dx');}
   else if(prefix==='pl'){renderServerPicker('pl-servers','pl');renderPluginChannelPickers();}
   else if(prefix==='sr'){renderServerPicker('sr-servers','sr');renderSearchChannelPickers();}
+  else if(prefix==='cc'){renderServerPicker('cc-servers','cc');renderCustomCodeChannelPickers();}
 }
 
 // Plugin Bot Runtime — runs inside Communiter Creator (no separate HTML needed)
