@@ -430,6 +430,11 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
             <h3>Bot de busqueda</h3>
             <p>Busca imagenes, paginas web o videos de YouTube con /img, /search y /yt.</p>
           </div>
+          <div class="type-card" onclick="startCreate('trivia')">
+            <div class="tc-icon" style="color:#f59e0b;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <h3>Bot de trivia</h3>
+            <p>Lanza preguntas con tiempo limite. El primero en responder bien suma un punto.</p>
+          </div>
         </div>
         <div style="margin-bottom:8px;"><span style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);">Adicionales</span></div>
         <div style="font-size:.78rem;color:var(--text-2);margin-bottom:12px;">Sube un archivo de código (.js) con la lógica del bot. Communiter Creator lo lee, lo trata como un tipo de bot normal, y lo ejecuta con el mismo motor que ya usan los demás — acá y en tu runner 24/7. No es una página web ni necesita dominio propio.</div>
@@ -494,6 +499,7 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
           <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);margin-bottom:10px;">Perfil del bot</div>
           <div class="form-grid">
             <div class="form-group"><label>Nombre del bot *</label><input type="text" id="ex-name" placeholder="Mi bot" class="fi"></div>
+            <div class="form-group"><label>Ícono (emoji)</label><input type="text" id="ex-icon" placeholder="🤖" class="fi"></div>
             <div class="form-group"><label>Avatar (URL, opcional)</label><input type="url" id="ex-avatar" placeholder="https://..." class="fi"></div>
             <div class="form-group"><label>Color</label><input type="color" id="ex-color" value="#2f6bff" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
             <div class="form-group"><label>Estado (opcional)</label><input type="text" id="ex-status" placeholder="Ej: Escaneando mensajes..." class="fi"></div>
@@ -537,6 +543,34 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
           <div class="form-group" id="sr-channel-pickers"></div>
           <div class="form-actions">
             <button class="btn btn-primary" onclick="saveBot('search')">Guardar bot</button>
+            <button class="btn btn-ghost" onclick="showPage('list')">Cancelar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: BOT DE TRIVIA -->
+      <div class="page" id="page-edit-trivia">
+        <button class="back-link" onclick="showPage('type-picker')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Volver
+        </button>
+        <div class="form-box">
+          <h3 style="color:#f59e0b;">Bot de trivia</h3>
+          <div class="sub">Lanza una pregunta al azar de tu banco cuando alguien escribe el comando. El primero en responder bien dentro del tiempo límite suma un punto.</div>
+          <div class="form-group"><label>Nombre del bot *</label><input type="text" id="tv-name" placeholder="TriviaBot" class="fi"></div>
+          <div class="form-group"><label>Avatar (URL, opcional)</label><input type="url" id="tv-avatar" placeholder="https://..." class="fi"></div>
+          <div class="form-group"><label>Color</label><input type="color" id="tv-color" value="#f59e0b" style="width:56px;height:38px;padding:2px;cursor:pointer;"></div>
+          <div class="form-group"><label>Comando</label><input type="text" id="tv-cmd" value="/trivia" class="fi"></div>
+          <div class="form-group"><label>Comando de puntaje</label><input type="text" id="tv-scorecmd" value="/puntaje" class="fi"></div>
+          <div class="form-group"><label>Segundos para responder</label><input type="number" id="tv-timer" value="20" min="5" max="120" class="fi"></div>
+          <div class="form-group full">
+            <label>Banco de preguntas (JSON)</label>
+            <textarea id="tv-json" class="fi" rows="6" style="font-family:monospace;font-size:.8rem;" placeholder='[{"question":"¿Capital de Francia?","answer":"Paris"}]'></textarea>
+            <div class="form-hint">Lista de objetos <code>{"question":"...", "answer":"..."}</code>. La respuesta se compara sin mayúsculas ni espacios extra.</div>
+          </div>
+          <div class="form-group"><label>En que comunidades?</label><div class="server-pick" id="tv-servers"></div></div>
+          <div class="form-group" id="tv-channel-pickers"></div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="saveBot('trivia')">Guardar bot</button>
             <button class="btn btn-ghost" onclick="showPage('list')">Cancelar</button>
           </div>
         </div>
@@ -862,7 +896,7 @@ async function loadMyServers(){
 }
 
 // Tipos de bot conocidos — cualquier tipo nuevo sólo necesita añadirse aquí
-const BOT_TYPES = ['welcome','dex','search','custom-code'];
+const BOT_TYPES = ['welcome','dex','search','trivia','custom-code'];
 
 // Datos de tipos huérfanos detectados al cargar (type -> count)
 let orphanedData = {};
@@ -895,28 +929,34 @@ function renderMyBots(){
     el.innerHTML=`<div class="empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-3);"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 15h.01M16 15h.01"/></svg><p>Aún no has creado ningún bot.<br>Haz clic en "Crear bot" para empezar.</p></div>`;
     return;
   }
-  const typeLabels={welcome:'Bienvenida',dex:'Dex',search:'Búsqueda','custom-code':'Código propio'};
-  const typeColors={search:'#10b981','custom-code':'#3b82f6'};
-  el.innerHTML=myBots.map(b=>{
-    const label=typeLabels[b.type]||b.type;
-    const customColor=typeColors[b.type];
+  const typeLabels={welcome:'Bienvenida',dex:'Dex',search:'Búsqueda',trivia:'Trivia','custom-code':'Código propio'};
+  const typeColors={search:'#10b981',trivia:'#f59e0b'};
+  const typeRank={welcome:0,dex:1,search:2,trivia:3};
+  const sortedBots=[...myBots].sort((a,b)=>(typeRank[a.type]??99)-(typeRank[b.type]??99));
+  el.innerHTML=sortedBots.map(b=>{
+    const isCustom=b.type==='custom-code';
+    const label=isCustom?(b.name||'Código propio'):(typeLabels[b.type]||b.type);
+    const customColor=isCustom?(b.avatarColor||'#3b82f6'):typeColors[b.type];
     const badgeCls=customColor?'':'type-'+(b.type==='dex'?'dex':'welcome');
     const badgeStyle=customColor?`style="color:${customColor};border-color:${customColor}33;background:${customColor}11;"`:'';
-    const meta=b.type==='custom-code'
+    const meta=isCustom
       ?`📄 ${b.fileName||'código propio'} <span style="color:var(--text-3);">· ${(b.installedServers||[]).length} comunidad(es)</span>`
       :b.type==='search'
         ?`Comandos: ${b.imgCmd||'/img'} · ${b.searchCmd||'/search'} · ${b.ytCmd||'/yt'}`
-        :`${(b.installedServers||[]).length} comunidad${(b.installedServers||[]).length===1?'':'es'} activa${(b.installedServers||[]).length===1?'':'s'}${b.type==='dex'?' · '+(b.items||[]).length+' elementos':''}`;
-    const actionBtn=(b.type==='custom-code')
-        ?`<button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')" style="background:${customColor||'var(--accent)'};color:#fff;">▶ Activar</button>`
+        :b.type==='trivia'
+          ?`${(b.questions||[]).length} pregunta(s) · cmd: ${b.triviaCmd||'/trivia'}`
+          :`${(b.installedServers||[]).length} comunidad${(b.installedServers||[]).length===1?'':'es'} activa${(b.installedServers||[]).length===1?'':'s'}${b.type==='dex'?' · '+(b.items||[]).length+' elementos':''}`;
+    const actionBtn=isCustom
+        ?`<button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')" style="background:${customColor};color:#fff;">▶ Activar</button>`
         :`<button class="btn btn-primary btn-sm" onclick="runBot('${b.uid}')">▶ Activar</button>`;
-    const syncBtn=(['welcome','dex','search'].includes(b.type)&&!b.runtimeCode)
+    const syncBtn=(['welcome','dex','search','trivia'].includes(b.type)&&!b.runtimeCode)
         ?`<button class="btn btn-ghost btn-sm" onclick="syncRuntimeCode('${b.uid}')" title="Este bot fue creado antes del runner 24/7 de Railway. Generale el código de ejecución para que corra ahí." style="color:#f59e0b;border-color:#f59e0b55;">🔁 Sincronizar Railway</button>`
         :'';
+    const avaContent=b.avatarUrl?`<img src="${b.avatarUrl}">`:(isCustom&&b.icon?b.icon:(b.name||'B')[0].toUpperCase());
     return `<div class="bot-card">
-      <div class="bot-ava" style="background:${b.avatarColor||'#2f6bff'};">${b.avatarUrl?`<img src="${b.avatarUrl}">`:(b.name||'B')[0].toUpperCase()}</div>
+      <div class="bot-ava" style="background:${b.avatarColor||'#2f6bff'};">${avaContent}</div>
       <div style="flex:1;min-width:0;">
-        <div class="bot-name">${b.name}<span class="type-badge ${badgeCls}" ${badgeStyle}>${label}</span></div>
+        <div class="bot-name">${b.name}<span class="type-badge ${badgeCls}" ${badgeStyle}>${isCustom?'Código propio':label}</span></div>
         <div class="bot-meta">${meta}</div>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="editBot('${b.uid}')">Editar</button>
@@ -961,8 +1001,17 @@ function startCreate(type){
     renderServerPicker('sr-servers','sr');
     renderSearchChannelPickers();
     showPage('edit-search');
+  } else if(type==='trivia'){
+    ['tv-name','tv-avatar','tv-json'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('tv-color').value='#f59e0b';
+    document.getElementById('tv-cmd').value='/trivia';
+    document.getElementById('tv-scorecmd').value='/puntaje';
+    document.getElementById('tv-timer').value='20';
+    renderServerPicker('tv-servers','tv');
+    renderTriviaChannelPickers();
+    showPage('edit-trivia');
   } else if(type==='custom-code'){
-    ['ex-name','ex-code','ex-avatar','ex-desc','ex-cmds','ex-status'].forEach(id=>document.getElementById(id).value='');
+    ['ex-name','ex-code','ex-avatar','ex-desc','ex-cmds','ex-status','ex-icon'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('ex-color').value='#2f6bff';
     document.getElementById('ex-file').value='';
     currentExternalFile=null;
@@ -1018,10 +1067,22 @@ function editBot(id){
     document.getElementById('sr-ytcmd').value=b.ytCmd||'/yt';
     renderServerPicker('sr-servers','sr');renderSearchChannelPickers();
     showPage('edit-search');
+  } else if(b.type==='trivia'){
+    welcomeChannelChoice={...(b.triviaChannels||{})};
+    document.getElementById('tv-name').value=b.name||'';
+    document.getElementById('tv-avatar').value=b.avatarUrl||'';
+    document.getElementById('tv-color').value=b.avatarColor||'#f59e0b';
+    document.getElementById('tv-cmd').value=b.triviaCmd||'/trivia';
+    document.getElementById('tv-scorecmd').value=b.scoreCmd||'/puntaje';
+    document.getElementById('tv-timer').value=b.timerSeconds||20;
+    document.getElementById('tv-json').value=JSON.stringify(b.questions||[],null,2);
+    renderServerPicker('tv-servers','tv');renderTriviaChannelPickers();
+    showPage('edit-trivia');
   } else if(b.type==='custom-code'){
     document.getElementById('ex-name').value=b.name||'';
     document.getElementById('ex-avatar').value=b.avatarUrl||'';
     document.getElementById('ex-color').value=b.avatarColor||'#2f6bff';
+    document.getElementById('ex-icon').value=b.icon||'';
     document.getElementById('ex-status').value=b.customStatus||'';
     document.getElementById('ex-desc').value=b.description||'';
     document.getElementById('ex-cmds').value=(b.botCommands||[]).join('\n');
@@ -1245,6 +1306,54 @@ function genRuntimeCode_search(bot){
     '})();'
   ].join('\n');
 }
+function genRuntimeCode_trivia(bot){
+  const cfg=JSON.stringify({
+    triviaChannels:bot.triviaChannels||{},
+    triviaCmd:(bot.triviaCmd||'/trivia').toLowerCase().trim(),
+    scoreCmd:(bot.scoreCmd||'/puntaje').toLowerCase().trim(),
+    timerSeconds:bot.timerSeconds||20,
+    questions:bot.questions||[]
+  });
+  return [
+    '// Bot de trivia — generado por Communiter Creator. No editar a mano.',
+    'const cfg = '+cfg+';',
+    'const channels = Object.values(cfg.triviaChannels).filter(Boolean);',
+    'let active = null;',
+    'function norm(s){ return (s||"").toLowerCase().trim().replace(/\\s+/g," "); }',
+    'function doAsk(channelId){',
+    '  if (active) return;',
+    '  if (!cfg.questions.length) return;',
+    '  const q = cfg.questions[Math.floor(Math.random()*cfg.questions.length)];',
+    '  ctx.sendMsg(channelId, "❓ "+q.question+" — "+cfg.timerSeconds+"s");',
+    '  const expire = setTimeout(() => {',
+    '    if (!active || active.q !== q) return;',
+    '    active = null;',
+    '    ctx.sendMsg(channelId, "⏰ Tiempo agotado. Era: "+q.answer);',
+    '  }, cfg.timerSeconds*1000);',
+    '  active = { q, channelId, expire };',
+    '}',
+    'channels.forEach(channelId => {',
+    '  ctx.listenChannel(channelId, async msg => {',
+    '    const txt = (msg.content||"").trim();',
+    '    const lower = txt.toLowerCase();',
+    '    if (lower === cfg.triviaCmd) { doAsk(channelId); return; }',
+    '    if (lower === cfg.scoreCmd) {',
+    '      const score = await ctx.dbGet("botdata/custom/"+ctx.bot.uid+"/scores/"+msg.uid) || 0;',
+    '      ctx.sendMsg(channelId, "🏆 "+(msg.name||"Vos")+": "+score+" punto(s)");',
+    '      return;',
+    '    }',
+    '    if (!active || active.channelId !== channelId) return;',
+    '    if (norm(txt) !== norm(active.q.answer)) return;',
+    '    clearTimeout(active.expire);',
+    '    const q = active.q; active = null;',
+    '    const score = (await ctx.dbGet("botdata/custom/"+ctx.bot.uid+"/scores/"+msg.uid) || 0) + 1;',
+    '    await ctx.dbSet("botdata/custom/"+ctx.bot.uid+"/scores/"+msg.uid, score);',
+    '    ctx.sendMsg(channelId, "✅ "+(msg.name||"Alguien")+" acertó: "+q.answer+" ("+score+" pt)");',
+    '  });',
+    '});',
+    'ctx.setPresence();'
+  ].join('\n');
+}
 async function saveBot(type){
 
   if(type==='custom-code'){
@@ -1263,6 +1372,7 @@ async function saveBot(type){
     const bot={uid:id,name,type:'custom-code',ownerId:window._currentUid,
       avatarUrl:document.getElementById('ex-avatar').value.trim(),
       avatarColor:document.getElementById('ex-color').value||'#2f6bff',
+      icon:document.getElementById('ex-icon').value.trim(),
       customStatus:document.getElementById('ex-status').value.trim(),
       description:document.getElementById('ex-desc').value.trim()||'Bot con código propio',
       botCommands:cmds,
@@ -1324,6 +1434,33 @@ async function saveBot(type){
     showToast('✅ Bot guardado');showPage('list');
     return;
   }
+  if(type==='trivia'){
+    const name=document.getElementById('tv-name').value.trim();
+    if(!name){showToast('⚠️ Ponle un nombre al bot');return;}
+    let questions=[];
+    try{
+      questions=JSON.parse(document.getElementById('tv-json').value||'[]');
+      if(!Array.isArray(questions))throw new Error();
+    }catch(e){showToast('⚠️ JSON inválido en el banco de preguntas');return;}
+    questions=questions.filter(q=>q&&q.question&&q.answer);
+    if(!questions.length){showToast('⚠️ Carga al menos una pregunta válida');return;}
+    const triviaCmd=document.getElementById('tv-cmd').value.trim()||'/trivia';
+    const scoreCmd=document.getElementById('tv-scorecmd').value.trim()||'/puntaje';
+    const timerSeconds=parseInt(document.getElementById('tv-timer').value)||20;
+    const id2=editingBotId||('bot_trivia_'+name.toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+genId(5));
+    const triviaBot={uid:id2,name,type:'trivia',ownerId:window._currentUid,
+      avatarUrl:document.getElementById('tv-avatar').value.trim(),
+      avatarColor:document.getElementById('tv-color').value||'#f59e0b',
+      triviaCmd,scoreCmd,timerSeconds,questions,
+      description:'Bot de trivia — '+name,
+      botCommands:[triviaCmd+' — Lanza una pregunta',scoreCmd+' — Ver tu puntaje'],
+      installedServers:[...selectedServers],
+      triviaChannels:{...welcomeChannelChoice}};
+    triviaBot.runtimeCode=genRuntimeCode_trivia(triviaBot);
+    await fbSet('botdata/bots/'+id2,triviaBot);
+    showToast('✅ Bot de trivia guardado');showPage('list');
+    return;
+  }
   if(type==='welcome'){
     const name=document.getElementById('w-name').value.trim();
     const message=document.getElementById('w-message').value.trim();
@@ -1343,7 +1480,7 @@ async function saveBot(type){
 
 async function syncRuntimeCode(id){
   const b=myBots.find(x=>x.uid===id);if(!b)return;
-  const gen={welcome:genRuntimeCode_welcome,dex:genRuntimeCode_dex,search:genRuntimeCode_search}[b.type];
+  const gen={welcome:genRuntimeCode_welcome,dex:genRuntimeCode_dex,search:genRuntimeCode_search,trivia:genRuntimeCode_trivia}[b.type];
   if(!gen){showToast('⚠️ Este tipo de bot no corre en Railway todavía');return;}
   await fbUpdate('botdata/bots/'+id,{runtimeCode:gen(b)});
   showToast('✅ "'+b.name+'" ya puede correr 24/7 en Railway');
@@ -1363,14 +1500,21 @@ async function deleteBotMaker(id){
 function buildCtxBrowser(bot,stopSelf){
   const listeners=[];
 
-  async function sendMsg(channelId,content){
+  async function sendMsg(channelId,content,identity){
     if(!channelId||!content)return;
     const id='msg'+genId(12);
     await fbSet('state/messages/'+channelId+'/'+id,{
-      id,uid:bot.uid,name:bot.name,color:bot.avatarColor||'#2f6bff',
-      avatarUrl:bot.avatarUrl||'',content,ts:Date.now(),
+      id,uid:bot.uid,name:(identity&&identity.name)||bot.name,
+      color:(identity&&identity.color)||bot.avatarColor||'#2f6bff',
+      avatarUrl:(identity&&identity.avatarUrl)||bot.avatarUrl||'',content,ts:Date.now(),
       reactions:[],pinned:false,edited:false,
     });
+    return id;
+  }
+
+  async function deleteMsg(channelId,msgId){
+    if(!channelId||!msgId)return;
+    await fbSet('state/messages/'+channelId+'/'+msgId,null);
   }
 
   function listenChannel(channelId,callback){
@@ -1458,7 +1602,7 @@ function buildCtxBrowser(bot,stopSelf){
   }
 
   return {
-    bot,sendMsg,listenChannel,dbGet,dbSet,dbListen,
+    bot,sendMsg,deleteMsg,listenChannel,dbGet,dbSet,dbListen,
     setPresence,log,pickItem,saveCapture,sendCollection,
     scheduleInterval,
     stop:()=>stopSelf(),
@@ -1488,7 +1632,8 @@ function showCtxDocsModal(){
     <p class="sub">Tu código recibe un objeto <code>ctx</code> con esto disponible. Es el mismo contrato en Communiter Creator y en Railway.</p>
     <div style="font-family:monospace;font-size:.78rem;line-height:1.9;color:var(--text-1);">
       <div><strong style="color:#3b82f6;">ctx.bot</strong> — objeto del bot (uid, name, installedServers, customChannels, etc.)</div>
-      <div><strong style="color:#3b82f6;">ctx.sendMsg(channelId, texto)</strong> — envía un mensaje como el bot</div>
+      <div><strong style="color:#3b82f6;">ctx.sendMsg(channelId, texto, identidad?)</strong> — envía un mensaje. Sin 3er argumento, aparece como el bot. Con <code>{name, avatarUrl, color}</code>, aparece con esa identidad (útil para bots que hablan "como" personajes distintos)</div>
+      <div><strong style="color:#3b82f6;">ctx.deleteMsg(channelId, msgId)</strong> — borra un mensaje por id (msg.id llega en el callback de listenChannel)</div>
       <div><strong style="color:#3b82f6;">ctx.listenChannel(channelId, msg => {...})</strong> — escucha mensajes nuevos (ignora mensajes viejos y de otros bots)</div>
       <div><strong style="color:#3b82f6;">ctx.dbGet(path)</strong> / <strong style="color:#3b82f6;">ctx.dbSet(path, valor)</strong> — leer/escribir en Firebase</div>
       <div><strong style="color:#3b82f6;">ctx.dbListen(path, valor => {...})</strong> — escuchar cambios en vivo de una ruta</div>
@@ -1518,6 +1663,80 @@ function renderSearchChannelPickers(){
         ${channels.map(ch=>`<option value="${ch.id}"${ch.id===current?' selected':''}>#${ch.name}</option>`).join('')}
       </select></div>`;
   }).join('');
+}
+
+function renderTriviaChannelPickers(){
+  const el=document.getElementById('tv-channel-pickers');if(!el)return;
+  if(!selectedServers.size){el.innerHTML='';return;}
+  el.innerHTML=Array.from(selectedServers).map(srvId=>{
+    const srv=myServers.find(s=>s.id===srvId);if(!srv)return'';
+    const channels=getAllChannelsOf(srv);
+    const current=welcomeChannelChoice[srvId]||(channels[0]?.id||'');
+    welcomeChannelChoice[srvId]=current;
+    return`<div style="margin-bottom:10px;">
+      <label style="font-size:.78rem;color:var(--text-2);display:block;margin-bottom:5px;">Canal del bot en <strong style="color:var(--text-0);">${srv.name}</strong></label>
+      <select onchange="welcomeChannelChoice['${srvId}']=this.value" style="width:100%;background:var(--bg-3);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text-0);font-family:var(--font);font-size:.85rem;outline:none;">
+        ${channels.map(ch=>`<option value="${ch.id}"${ch.id===current?' selected':''}>#${ch.name}</option>`).join('')}
+      </select></div>`;
+  }).join('');
+}
+
+// ── TRIVIA BOT RUNTIME ──
+async function startTriviaBot(bot){
+  const channels=Object.values(bot.triviaChannels||{}).filter(Boolean);
+  if(!channels.length){addLog('warn','No hay canales configurados.');return;}
+  const triviaCmd=(bot.triviaCmd||'/trivia').toLowerCase().trim();
+  const scoreCmd=(bot.scoreCmd||'/puntaje').toLowerCase().trim();
+  const timerSeconds=bot.timerSeconds||20;
+  const questions=bot.questions||[];
+  addLog('info',`Trivia bot activo. Comandos: ${triviaCmd} · ${scoreCmd}`);
+
+  function norm(s){ return (s||'').toLowerCase().trim().replace(/\s+/g,' '); }
+  let active=null;
+
+  function doAsk(channelId){
+    if(active)return;
+    if(!questions.length)return;
+    const q=questions[Math.floor(Math.random()*questions.length)];
+    sendBotMsg(bot,channelId,`❓ ${q.question} — ${timerSeconds}s`);
+    const expire=setTimeout(()=>{
+      if(!active||active.q!==q)return;
+      active=null;
+      sendBotMsg(bot,channelId,`⏰ Tiempo agotado. Era: ${q.answer}`);
+    },timerSeconds*1000);
+    active={q,channelId,expire};
+  }
+
+  const startTs=Date.now();
+  channels.forEach(channelId=>{
+    const unsub=window._fbOnChildAdded(fbRef('state/messages/'+channelId),snap=>{
+      if(!snap.exists())return;
+      const msg=snap.val();if(!msg||!msg.content)return;
+      if((msg.ts||0)<startTs)return;
+      if((msg.uid||'').startsWith('bot_'))return;
+      const txt=(msg.content||'').trim();
+      const lower=txt.toLowerCase();
+      if(lower===triviaCmd){ doAsk(channelId); return; }
+      if(lower===scoreCmd){
+        fbGetSnap('botdata/custom/'+bot.uid+'/scores/'+msg.uid).then(snap2=>{
+          const score=snap2&&snap2.exists()?snap2.val():0;
+          sendBotMsg(bot,channelId,`🏆 ${msg.name||'Vos'}: ${score} punto(s)`);
+        });
+        return;
+      }
+      if(!active||active.channelId!==channelId)return;
+      if(norm(txt)!==norm(active.q.answer))return;
+      clearTimeout(active.expire);
+      const q=active.q;active=null;
+      fbGetSnap('botdata/custom/'+bot.uid+'/scores/'+msg.uid).then(async snap2=>{
+        const score=(snap2&&snap2.exists()?snap2.val():0)+1;
+        await fbSet('botdata/custom/'+bot.uid+'/scores/'+msg.uid,score);
+        sendBotMsg(bot,channelId,`✅ ${msg.name||'Alguien'} acertó: ${q.answer} (${score} pt)`);
+        addLog('success',`${msg.name||'?'} acertó: ${q.answer}`);
+      });
+    });
+    runningListeners.push(()=>{try{unsub();}catch(e){}});
+  });
 }
 
 // ── SEARCH BOT RUNTIME ──
@@ -1728,16 +1947,12 @@ function renderDexCardsPreview(){
   const numMap={};sorted.forEach((it,i)=>numMap[it.id]=i+1);
   grid.innerHTML=currentDexItems.map(it=>{
     const num=numMap[it.id]||'?';
-    return`<div class="card">
-      <div class="card-img">
+    return`<div class="card" style="text-align:center;padding:10px 6px;" title="${(it.description||'').replace(/"/g,'&quot;')}">
+      <div class="card-img" style="font-size:1.8rem;height:56px;">
         <span class="card-num">#${String(num).padStart(3,'0')}</span>
         ${it.imageUrl?`<img src="${it.imageUrl}" onerror="this.parentElement.innerHTML='${it.icon||'❔'}'">`:(it.icon||'❔')}
       </div>
-      <div class="card-body">
-        <div class="card-name">${it.name}</div>
-        <div class="card-desc">${it.description||'Sin descripción.'}</div>
-        <div class="card-meta"><span class="rarity-badge r-${it.rarity}">${RARITY_ICONS[it.rarity]} ${cap(it.rarity)}</span><span style="font-size:.72rem;color:var(--text-3);">⚖️${it.weight}</span></div>
-      </div>
+      <div class="card-name" style="font-size:.8rem;">${it.name}</div>
     </div>`;
   }).join('');
 }
@@ -1748,7 +1963,7 @@ function filterDexCards(q){
   const numMap={};sorted.forEach((it,i)=>numMap[it.id]=i+1);
   grid.innerHTML=filtered.map(it=>{
     const num=numMap[it.id]||'?';
-    return`<div class="card"><div class="card-img"><span class="card-num">#${String(num).padStart(3,'0')}</span>${it.imageUrl?`<img src="${it.imageUrl}">`:(it.icon||'❔')}</div><div class="card-body"><div class="card-name">${it.name}</div><div class="card-desc">${it.description||'Sin descripción.'}</div><div class="card-meta"><span class="rarity-badge r-${it.rarity}">${RARITY_ICONS[it.rarity]} ${cap(it.rarity)}</span></div></div></div>`;
+    return`<div class="card" style="text-align:center;padding:10px 6px;" title="${(it.description||'').replace(/"/g,'&quot;')}"><div class="card-img" style="font-size:1.8rem;height:56px;"><span class="card-num">#${String(num).padStart(3,'0')}</span>${it.imageUrl?`<img src="${it.imageUrl}">`:(it.icon||'❔')}</div><div class="card-name" style="font-size:.8rem;">${it.name}</div></div>`;
   }).join('');
 }
 
@@ -1840,6 +2055,10 @@ async function runBot(id){
   } else if(bot.type==='search'){
     const srChs=Object.values(bot.searchChannels||{}).filter(Boolean);
     if(!srChs.length){showToast('⚠️ Configura al menos un canal para este bot (Editar)');return;}
+  } else if(bot.type==='trivia'){
+    const tvChs=Object.values(bot.triviaChannels||{}).filter(Boolean);
+    if(!tvChs.length){showToast('⚠️ Configura al menos un canal para este bot (Editar)');return;}
+    if(!bot.questions||!bot.questions.length){showToast('⚠️ Este bot no tiene preguntas cargadas (Editar)');return;}
   } else if(bot.type!=='custom-code'&&(!bot.installedServers||!bot.installedServers.length)){
     showToast('⚠️ Activa este bot en al menos una comunidad (Editar)');return;
   }
@@ -1850,12 +2069,13 @@ async function runBot(id){
   document.getElementById('run-name').textContent=bot.name;
   document.getElementById('run-log').innerHTML='';
   showPage('run');
-  const typeLabel={dex:'Dex',search:'Busqueda',welcome:'Bienvenida','custom-code':'Código propio'}[bot.type]||bot.type;
+  const typeLabel={dex:'Dex',search:'Busqueda',welcome:'Bienvenida',trivia:'Trivia','custom-code':'Código propio'}[bot.type]||bot.type;
   addLog('system',`${bot.name} iniciado (Bot ${typeLabel}).`);
   await fbSet('presence/'+bot.uid,{uid:bot.uid,name:bot.name,avatarUrl:bot.avatarUrl||'',avatarColor:bot.avatarColor||'#2f6bff',status:'online',customStatus:bot.customStatus||'',isBot:true,ts:Date.now()});
   window.addEventListener('beforeunload',_beforeUnloadHandler);
   if(bot.type==='dex') startDexBot(bot);
   else if(bot.type==='search') startSearchBot(bot);
+  else if(bot.type==='trivia') startTriviaBot(bot);
   else if(bot.type==='custom-code') startCustomCodeBot(bot);
   else startWelcomeBot(bot);
 }
@@ -2096,13 +2316,12 @@ document.addEventListener('click',e=>{
   if(e.target.classList.contains('modal-overlay'))closeAdminModal(e.target.id);
 });
 
-// Patch toggleServerChip to also handle 'pl' prefix
-const _origToggleServerChip = toggleServerChip;
 function toggleServerChip(srvId,prefix){
   if(selectedServers.has(srvId))selectedServers.delete(srvId);else selectedServers.add(srvId);
   if(prefix==='w'){renderServerPicker('w-servers','w');renderWelcomeChannelPickers();}
   else if(prefix==='dx'){renderServerPicker('dx-servers','dx');renderDexChannelPickers('dx');}
   else if(prefix==='sr'){renderServerPicker('sr-servers','sr');renderSearchChannelPickers();}
+  else if(prefix==='tv'){renderServerPicker('tv-servers','tv');renderTriviaChannelPickers();}
   else if(prefix==='cc'){renderServerPicker('cc-servers','cc');renderCustomCodeChannelPickers();}
 }
 
