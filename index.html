@@ -364,6 +364,10 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
         Servidores
       </button>
+      <button class="nav-item" id="nav-admin-themes" onclick="switchSection('admin-themes',this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18c1.5 0 2-1 2-2s-1-1-1-2 1-1 2-1h1a4 4 0 0 0 4-4 8 8 0 0 0-8-9z"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16" cy="10" r="1"/></svg>
+        Temas
+      </button>
       <div class="nav-section-label" style="margin-top:6px;">Perfil</div>
       <button class="nav-item" id="nav-profile" onclick="switchSection('profile',this)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -479,6 +483,16 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
           <h3 style="color:#3b82f6;">Bot con código propio</h3>
           <div class="sub">Sube o escribí un script (.js) que use la API de bots (<code>ctx</code>). Corre igual acá en Communiter Creator que en tu runner 24/7 de Railway — no es una página web, no necesita dominio ni hosting propio.</div>
           <div class="form-group">
+            <label>Empezar desde una plantilla (opcional)</label>
+            <select id="ex-template" class="fi" onchange="applyBotTemplate(this.value)">
+              <option value="">— En blanco —</option>
+              <option value="dex-mine">Dex Mine (adivinar nombre oculto)</option>
+              <option value="dex-fight-catch">Dex Fight-Catch (primero en escribir gana)</option>
+              <option value="roleplay-box">Roleplay Character Box (personajes por usuario)</option>
+            </select>
+            <div class="form-hint">Elegí una para cargar su código y perfil de una — después podés editar lo que quieras antes de guardar.</div>
+          </div>
+          <div class="form-group">
             <label>Origen del código *</label>
             <div class="tab-bar" style="margin-bottom:0;">
               <button type="button" class="tab-btn active" id="ex-mode-file" onclick="setExternalMode('file')">📄 Subir archivo</button>
@@ -520,6 +534,303 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
           </div>
         </div>
       </div>
+
+      <script type="text/plain" id="tpl-code-dex-mine">const BOT_VERSION = '1.0.0';
+
+const CONFIG = {
+  spawnCmd: '/mine',
+  collectionCmd: '/coleccion',
+  intervalMinutes: 30,
+  timerSeconds: 60,
+  lang: 'es',
+  items: [],
+};
+
+const RARITY_NAMES = CONFIG.lang === 'en'
+  ? { common: 'Common', uncommon: 'Uncommon', rare: 'Rare', epic: 'Epic', legendary: 'Legendary' }
+  : { common: 'Común', uncommon: 'Poco común', rare: 'Raro', epic: 'Épico', legendary: 'Legendario' };
+
+function itemName(item) {
+  return CONFIG.lang === 'en' ? (item.nameEN || item.nameES || item.name) : (item.nameES || item.nameEN || item.name);
+}
+
+const channels = Object.values(ctx.bot.customChannels || {}).filter(Boolean);
+
+if (!channels.length) {
+  ctx.log('warn', CONFIG.lang === 'en' ? 'No channels configured.' : 'Sin canales configurados.');
+} else {
+  const spawnCmd = CONFIG.spawnCmd.toLowerCase().trim();
+  const colCmd = CONFIG.collectionCmd.toLowerCase().trim();
+  const timerMs = Math.max(1, CONFIG.timerSeconds) * 1000;
+  let activeSpawn = null;
+
+  function doSpawn() {
+    if (activeSpawn) return;
+    if (!CONFIG.items || !CONFIG.items.length) return;
+    const item = ctx.pickItem(CONFIG.items);
+    if (!item) return;
+    const channelId = channels[Math.floor(Math.random() * channels.length)];
+    const rarityLabel = RARITY_NAMES[item.rarity] || item.rarity || '';
+
+    let msg = `🔍 **?**${rarityLabel ? ' (' + rarityLabel + ')' : ''}\n`;
+    if (item.icon) msg += `[ ${item.icon} ??? ]\n`;
+    if (item.imageUrl) msg += item.imageUrl + '\n';
+    msg += `\`${spawnCmd} [nombre]\` — ${CONFIG.timerSeconds}s`;
+
+    ctx.sendMsg(channelId, msg);
+    ctx.log('warn', (CONFIG.lang === 'en' ? 'spawn ??? ' : 'apareció ??? ') + rarityLabel);
+
+    const expireTimeout = setTimeout(() => {
+      if (!activeSpawn || activeSpawn.item.id !== item.id) return;
+      activeSpawn = null;
+      ctx.sendMsg(channelId, `⏰ ${item.icon || ''} ${itemName(item)}`);
+    }, timerMs);
+
+    activeSpawn = { item, channelId, expireTimeout };
+  }
+
+  channels.forEach(channelId => {
+    ctx.listenChannel(channelId, async msg => {
+      const txt = (msg.content || '').trim().toLowerCase();
+
+      if (txt === colCmd) {
+        await ctx.sendCollection(channelId, msg.uid, msg.name);
+        return;
+      }
+
+      if (!activeSpawn || activeSpawn.channelId !== channelId) return;
+      if (!txt.startsWith(spawnCmd + ' ')) return;
+
+      const guess = txt.slice(spawnCmd.length + 1).trim();
+      const correct = itemName(activeSpawn.item).toLowerCase();
+      if (guess !== correct) return;
+
+      clearTimeout(activeSpawn.expireTimeout);
+      const { item } = activeSpawn;
+      activeSpawn = null;
+
+      const num = CONFIG.items.findIndex(x => x.id === item.id) + 1;
+      await ctx.saveCapture(msg.uid, { ...item, name: itemName(item) }, num, msg.name);
+      ctx.sendMsg(channelId, `✨ ${msg.name || ''} — ${item.icon || ''} ${itemName(item)}`);
+      ctx.log('success', `${msg.name || ''}: ${itemName(item)}`);
+    });
+  });
+
+  ctx.scheduleInterval(CONFIG.intervalMinutes, doSpawn);
+  doSpawn();
+}
+
+ctx.setPresence('');
+</script>
+
+      <script type="text/plain" id="tpl-code-dex-fight-catch">const BOT_VERSION = '1.0.0';
+
+const CONFIG = {
+  spawnCmd: '/catch',
+  collectionCmd: '/coleccion',
+  intervalMinutes: 20,
+  timerSeconds: 30,
+  lang: 'es',
+  items: [],
+};
+
+const RARITY_NAMES = CONFIG.lang === 'en'
+  ? { common: 'Common', uncommon: 'Uncommon', rare: 'Rare', epic: 'Epic', legendary: 'Legendary' }
+  : { common: 'Común', uncommon: 'Poco común', rare: 'Raro', epic: 'Épico', legendary: 'Legendario' };
+
+function itemName(item) {
+  return CONFIG.lang === 'en' ? (item.nameEN || item.nameES || item.name) : (item.nameES || item.nameEN || item.name);
+}
+
+const channels = Object.values(ctx.bot.customChannels || {}).filter(Boolean);
+
+if (!channels.length) {
+  ctx.log('warn', CONFIG.lang === 'en' ? 'No channels configured.' : 'Sin canales configurados.');
+} else {
+  const spawnCmd = CONFIG.spawnCmd.toLowerCase().trim();
+  const colCmd = CONFIG.collectionCmd.toLowerCase().trim();
+  const timerMs = Math.max(1, CONFIG.timerSeconds) * 1000;
+  let activeSpawn = null;
+
+  function doSpawn() {
+    if (activeSpawn) return;
+    if (!CONFIG.items || !CONFIG.items.length) return;
+    const item = ctx.pickItem(CONFIG.items);
+    if (!item) return;
+    const channelId = channels[Math.floor(Math.random() * channels.length)];
+    const rarityLabel = RARITY_NAMES[item.rarity] || item.rarity || '';
+
+    let msg = `⚔️ ${item.icon || ''} **${itemName(item)}**${rarityLabel ? ' (' + rarityLabel + ')' : ''}\n`;
+    msg += `\`${spawnCmd} ${itemName(item)}\` — ${CONFIG.timerSeconds}s`;
+    if (item.imageUrl) msg += '\n' + item.imageUrl;
+
+    ctx.sendMsg(channelId, msg);
+    ctx.log('warn', (CONFIG.lang === 'en' ? 'spawn ' : 'apareció ') + itemName(item) + ' ' + rarityLabel);
+
+    const expireTimeout = setTimeout(() => {
+      if (!activeSpawn || activeSpawn.item.id !== item.id) return;
+      activeSpawn = null;
+      ctx.sendMsg(channelId, `⏰ ${item.icon || ''} ${itemName(item)}`);
+    }, timerMs);
+
+    activeSpawn = { item, channelId, expireTimeout };
+  }
+
+  channels.forEach(channelId => {
+    ctx.listenChannel(channelId, async msg => {
+      const txt = (msg.content || '').trim().toLowerCase();
+
+      if (txt === colCmd) {
+        await ctx.sendCollection(channelId, msg.uid, msg.name);
+        return;
+      }
+
+      if (!activeSpawn || activeSpawn.channelId !== channelId) return;
+      if (!txt.startsWith(spawnCmd + ' ')) return;
+
+      const guess = txt.slice(spawnCmd.length + 1).trim();
+      const correct = itemName(activeSpawn.item).toLowerCase();
+      if (guess !== correct) return;
+
+      clearTimeout(activeSpawn.expireTimeout);
+      const { item } = activeSpawn;
+      activeSpawn = null;
+
+      const num = CONFIG.items.findIndex(x => x.id === item.id) + 1;
+      await ctx.saveCapture(msg.uid, { ...item, name: itemName(item) }, num, msg.name);
+      ctx.sendMsg(channelId, `✨ ${msg.name || ''} — ${item.icon || ''} ${itemName(item)}`);
+      ctx.log('success', `${msg.name || ''}: ${itemName(item)}`);
+    });
+  });
+
+  ctx.scheduleInterval(CONFIG.intervalMinutes, doSpawn);
+  doSpawn();
+}
+
+ctx.setPresence('');
+</script>
+
+      <script type="text/plain" id="tpl-code-roleplay-box">const BOT_VERSION = '1.0.0';
+
+const CONFIG = {
+  prefix: 'cb!',
+  cmdNew: 'new',
+  cmdList: 'list',
+  cmdEdit: 'edit',
+  cmdDelete: 'delete',
+  cmdHelp: 'help',
+};
+
+const channels = Object.values(ctx.bot.customChannels || {}).filter(Boolean);
+
+function dataPath(userId) {
+  return 'botdata/custom/' + ctx.bot.uid + '/tuppers/' + userId;
+}
+
+async function getTuppers(userId) {
+  const data = await ctx.dbGet(dataPath(userId));
+  return data || {};
+}
+
+async function saveTuppers(userId, tuppers) {
+  await ctx.dbSet(dataPath(userId), tuppers);
+}
+
+function matchTrigger(tuppers, text) {
+  const lower = text.toLowerCase();
+  let best = null;
+  for (const key in tuppers) {
+    const t = key + ':';
+    if (lower.startsWith(t) && (!best || t.length > best.length)) best = key;
+  }
+  return best;
+}
+
+if (!channels.length) {
+  ctx.log('warn', 'Sin canales configurados.');
+} else {
+  channels.forEach(channelId => {
+    ctx.listenChannel(channelId, async msg => {
+      const raw = (msg.content || '').trim();
+      const lower = raw.toLowerCase();
+
+      if (lower.startsWith(CONFIG.prefix)) {
+        const rest = raw.slice(CONFIG.prefix.length).trim();
+        const parts = rest.split(/\s+/).filter(Boolean);
+        const cmd = (parts.shift() || '').toLowerCase();
+        const tuppers = await getTuppers(msg.uid);
+
+        if (cmd === CONFIG.cmdNew) {
+          const trigger = (parts.shift() || '').replace(/:$/, '').toLowerCase();
+          let avatarUrl = '';
+          if (parts[0] && /^https?:\/\//.test(parts[0])) avatarUrl = parts.shift();
+          const name = parts.join(' ');
+          if (!trigger || !name) {
+            await ctx.sendMsg(channelId, CONFIG.prefix + CONFIG.cmdNew + ' [trigger] [avatarUrl?] [nombre]');
+            return;
+          }
+          tuppers[trigger] = { trigger, name, avatarUrl };
+          await saveTuppers(msg.uid, tuppers);
+          await ctx.sendMsg(channelId, trigger + ': -> ' + name);
+          return;
+        }
+
+        if (cmd === CONFIG.cmdList) {
+          const keys = Object.keys(tuppers);
+          if (!keys.length) { await ctx.sendMsg(channelId, '-'); return; }
+          await ctx.sendMsg(channelId, keys.map(k => k + ': -> ' + tuppers[k].name).join('\n'));
+          return;
+        }
+
+        if (cmd === CONFIG.cmdEdit) {
+          const trigger = (parts.shift() || '').replace(/:$/, '').toLowerCase();
+          const field = parts.shift();
+          const value = parts.join(' ');
+          if (!tuppers[trigger] || (field !== 'name' && field !== 'avatarUrl')) {
+            await ctx.sendMsg(channelId, CONFIG.prefix + CONFIG.cmdEdit + ' [trigger] [name|avatarUrl] [valor]');
+            return;
+          }
+          tuppers[trigger][field] = value;
+          await saveTuppers(msg.uid, tuppers);
+          await ctx.sendMsg(channelId, trigger + ': actualizado');
+          return;
+        }
+
+        if (cmd === CONFIG.cmdDelete) {
+          const trigger = (parts.shift() || '').replace(/:$/, '').toLowerCase();
+          if (!tuppers[trigger]) { await ctx.sendMsg(channelId, '-'); return; }
+          delete tuppers[trigger];
+          await saveTuppers(msg.uid, tuppers);
+          await ctx.sendMsg(channelId, trigger + ': eliminado');
+          return;
+        }
+
+        await ctx.sendMsg(channelId,
+          CONFIG.prefix + CONFIG.cmdNew + ' [trigger] [avatarUrl?] [nombre]\n' +
+          CONFIG.prefix + CONFIG.cmdList + '\n' +
+          CONFIG.prefix + CONFIG.cmdEdit + ' [trigger] [name|avatarUrl] [valor]\n' +
+          CONFIG.prefix + CONFIG.cmdDelete + ' [trigger]\n' +
+          '[trigger]: texto'
+        );
+        return;
+      }
+
+      const tuppers = await getTuppers(msg.uid);
+      const trigger = matchTrigger(tuppers, raw);
+      if (!trigger) return;
+
+      const tupper = tuppers[trigger];
+      const content = raw.slice(trigger.length + 1).trim();
+      if (!content) return;
+
+      await ctx.deleteMsg(channelId, msg.id);
+      await ctx.sendMsg(channelId, content, { name: tupper.name, avatarUrl: tupper.avatarUrl });
+    });
+  });
+}
+
+ctx.setPresence('');
+</script>
 
       <!-- PAGE: BOT DE BUSQUEDA -->
       <div class="page" id="page-edit-search">
@@ -702,6 +1013,30 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
         <div class="section-header-text"><h2>Instalación de bots</h2><p>Servidores con bots activos.</p></div>
       </div>
       <div id="servers-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         SECCIÓN: ADMIN — TEMAS (decoraciones de avatar)
+    ══════════════════════════════════════════ -->
+    <div class="section" id="sec-admin-themes">
+      <div class="section-header">
+        <div class="section-header-text"><h2>Temas — Decoraciones de avatar</h2><p>Catálogo de marcos decorativos con arte propio. Los usuarios los eligen en Communiter para personalizar su avatar.</p></div>
+      </div>
+      <div class="form-box" style="max-width:560px;">
+        <h3 id="theme-form-title">Nueva decoración</h3>
+        <div class="form-group"><label>Nombre *</label><input type="text" id="th-label" class="fi" placeholder="Aries"></div>
+        <div class="form-group"><label>Imagen (URL) *</label><input type="url" id="th-image" class="fi" placeholder="https://..." oninput="document.getElementById('th-preview').src=this.value"></div>
+        <div class="form-group"><label>Vista previa</label>
+          <div style="width:88px;height:88px;border-radius:50%;background:var(--bg-3);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+            <img id="th-preview" src="" style="width:100%;height:100%;object-fit:contain;display:none;" onerror="this.style.display='none'" onload="this.style.display='block'">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="saveThemeAdmin()">Guardar</button>
+          <button class="btn btn-ghost" id="theme-cancel-btn" style="display:none;" onclick="resetThemeForm()">Cancelar edición</button>
+        </div>
+      </div>
+      <div class="type-grid" id="themes-admin-grid" style="margin-top:20px;"></div>
     </div>
 
     <!-- ══════════════════════════════════════════
@@ -1149,6 +1484,24 @@ function renderCustomCodeChannelPickers(){
   }).join('');
 }
 
+const BOT_TEMPLATES = {
+  'dex-mine':{codeId:'tpl-code-dex-mine',name:'Dex Mine',icon:'🔍',color:'#a78bfa',desc:'Modo dex: el elemento aparece oculto, gana el primero en adivinar el nombre.',cmds:'/mine - Ver el elemento activo\n/coleccion - Ver tu colección'},
+  'dex-fight-catch':{codeId:'tpl-code-dex-fight-catch',name:'Dex Fight-Catch',icon:'⚔️',color:'#f97316',desc:'Modo dex: el elemento aparece visible, gana el primero en escribir su nombre.',cmds:'/catch - Ver el elemento activo\n/coleccion - Ver tu colección'},
+  'roleplay-box':{codeId:'tpl-code-roleplay-box',name:'Roleplay Character Box',icon:'🎭',color:'#ec4899',desc:'Personajes propios por usuario, cada uno con su propio trigger (ej. "AB:").',cmds:'cb!new [trigger] [avatarUrl?] [nombre]\ncb!list\ncb!edit [trigger] [name|avatarUrl] [valor]\ncb!delete [trigger]'},
+};
+function applyBotTemplate(key){
+  if(!key)return;
+  const t=BOT_TEMPLATES[key];if(!t)return;
+  const code=document.getElementById(t.codeId).textContent.trim();
+  setExternalMode('url');
+  document.getElementById('ex-code').value=code;
+  if(!document.getElementById('ex-name').value.trim())document.getElementById('ex-name').value=t.name;
+  document.getElementById('ex-icon').value=t.icon;
+  document.getElementById('ex-color').value=t.color;
+  document.getElementById('ex-desc').value=t.desc;
+  document.getElementById('ex-cmds').value=t.cmds;
+  showToast('✅ Plantilla cargada — revisá y ajustá antes de guardar');
+}
 function setExternalMode(mode){
   externalMode=mode;
   document.getElementById('ex-mode-file').classList.toggle('active',mode==='file');
@@ -2114,7 +2467,7 @@ async function sendBotMsg(bot,channelId,content){
 // ══════════════════════════════════════════
 
 function loadAll(){
-  loadDexCatalogsAdmin();loadServersAdmin();loadCapturesAdmin();loadBotsAdmin();
+  loadDexCatalogsAdmin();loadServersAdmin();loadCapturesAdmin();loadBotsAdmin();loadThemesAdmin();
 }
 
 // ── ADMIN BOTS ──
@@ -2235,6 +2588,60 @@ async function deleteDexBotAdmin(id){
 }
 
 // ── SERVERS ──
+let editingThemeId=null;
+function loadThemesAdmin(){
+  fbOn('catalog/avatarDecorations',snap=>{
+    const data=snap.val()||{};
+    renderThemesAdmin(Object.values(data));
+  });
+}
+function renderThemesAdmin(items){
+  const grid=document.getElementById('themes-admin-grid');if(!grid)return;
+  if(!items.length){grid.innerHTML='<div style="color:var(--text-3);font-size:.85rem;padding:20px;">Todavía no hay decoraciones cargadas.</div>';return;}
+  grid.innerHTML=items.map(t=>`<div class="type-card" style="cursor:default;text-align:center;">
+    <div style="width:64px;height:64px;margin:0 auto 8px;border-radius:50%;background:var(--bg-3);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+      <img src="${t.imageUrl}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none'">
+    </div>
+    <h3>${escapeHtmlCreator(t.label)}</h3>
+    <div style="display:flex;gap:6px;justify-content:center;margin-top:8px;">
+      <button class="btn btn-ghost btn-sm" onclick="editThemeAdmin('${t.id}')">Editar</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteThemeAdmin('${t.id}')">Eliminar</button>
+    </div>
+  </div>`).join('');
+}
+function escapeHtmlCreator(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function resetThemeForm(){
+  editingThemeId=null;
+  document.getElementById('th-label').value='';
+  document.getElementById('th-image').value='';
+  document.getElementById('th-preview').src='';document.getElementById('th-preview').style.display='none';
+  document.getElementById('theme-form-title').textContent='Nueva decoración';
+  document.getElementById('theme-cancel-btn').style.display='none';
+}
+async function editThemeAdmin(id){
+  const snap=await fbGetSnap('catalog/avatarDecorations/'+id);
+  const t=snap&&snap.exists()?snap.val():null;if(!t)return;
+  editingThemeId=id;
+  document.getElementById('th-label').value=t.label||'';
+  document.getElementById('th-image').value=t.imageUrl||'';
+  document.getElementById('th-preview').src=t.imageUrl||'';document.getElementById('th-preview').style.display=t.imageUrl?'block':'none';
+  document.getElementById('theme-form-title').textContent='Editar decoración';
+  document.getElementById('theme-cancel-btn').style.display='';
+}
+async function saveThemeAdmin(){
+  const label=document.getElementById('th-label').value.trim();
+  const imageUrl=document.getElementById('th-image').value.trim();
+  if(!label||!imageUrl){showToast('⚠️ Completa nombre e imagen');return;}
+  const id=editingThemeId||('deco_'+label.toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+genId(5));
+  await fbSet('catalog/avatarDecorations/'+id,{id,label,imageUrl});
+  showToast('✅ Decoración guardada');
+  resetThemeForm();
+}
+async function deleteThemeAdmin(id){
+  if(!confirm('¿Eliminar esta decoración? Los usuarios que la tengan puesta la perderán.'))return;
+  await fbRemove('catalog/avatarDecorations/'+id);
+  showToast('🗑️ Decoración eliminada');
+}
 function loadServersAdmin(){
   fbOn('botdata/servers',snap=>{
     const servers=snap.exists()?Object.entries(snap.val()).map(([id,v])=>({id,...v})):[];
