@@ -366,7 +366,7 @@ input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-
       </button>
       <button class="nav-item" id="nav-admin-themes" onclick="switchSection('admin-themes',this)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18c1.5 0 2-1 2-2s-1-1-1-2 1-1 2-1h1a4 4 0 0 0 4-4 8 8 0 0 0-8-9z"/><circle cx="8" cy="10" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16" cy="10" r="1"/></svg>
-        Temas
+        Decoraciones
       </button>
       <div class="nav-section-label" style="margin-top:6px;">Perfil</div>
       <button class="nav-item" id="nav-profile" onclick="switchSection('profile',this)">
@@ -1020,15 +1020,66 @@ ctx.setPresence('');
     ══════════════════════════════════════════ -->
     <div class="section" id="sec-admin-themes">
       <div class="section-header">
-        <div class="section-header-text"><h2>Temas — Decoraciones de avatar</h2><p>Catálogo de marcos decorativos con arte propio. Los usuarios los eligen en Communiter para personalizar su avatar.</p></div>
+        <div class="section-header-text"><h2>Decoraciones</h2><p>Catálogo de marcos, placas y efectos que los usuarios eligen en Communiter para personalizar su perfil.</p></div>
       </div>
       <div class="form-box" style="max-width:560px;">
         <h3 id="theme-form-title">Nueva decoración</h3>
+        <div class="form-group"><label>Tipo *</label>
+          <select id="th-type" class="fi" onchange="renderThemeFormFields()">
+            <option value="avatarFrame">Marco de avatar</option>
+            <option value="nameplate">Placa de nombre</option>
+            <option value="effect">Efecto de perfil</option>
+          </select>
+        </div>
         <div class="form-group"><label>Nombre *</label><input type="text" id="th-label" class="fi" placeholder="Aries"></div>
-        <div class="form-group"><label>Imagen (URL) *</label><input type="url" id="th-image" class="fi" placeholder="https://..." oninput="document.getElementById('th-preview').src=this.value"></div>
-        <div class="form-group"><label>Vista previa</label>
-          <div style="width:88px;height:88px;border-radius:50%;background:var(--bg-3);display:flex;align-items:center;justify-content:center;overflow:hidden;">
-            <img id="th-preview" src="" style="width:100%;height:100%;object-fit:contain;display:none;" onerror="this.style.display='none'" onload="this.style.display='block'">
+        <div class="form-group"><label>Categoría (opcional)</label><input type="text" id="th-category" class="fi" placeholder="Temporada, evento, básico..."></div>
+        <div class="form-group">
+          <label>Pegatina (opcional) <span style="font-weight:400;color:var(--text-3);">— insignia tipo "SOLO CON ORBS"</span></label>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <input type="text" id="th-tag-text" class="fi" placeholder="Ej: SOLO CON ORBS, NUEVO, LIMITADO" style="flex:1;" oninput="updateThemePreview()">
+            <input type="color" id="th-tag-bg" value="#ffffff" style="width:44px;height:38px;padding:2px;" oninput="updateThemePreview()">
+            <input type="color" id="th-tag-color" value="#0b0b0f" style="width:44px;height:38px;padding:2px;" oninput="updateThemePreview()">
+          </div>
+        </div>
+        <div id="th-fields-avatarFrame">
+          <div class="form-group"><label>Imagen — subir archivo</label><input type="file" id="th-image-file" class="fi" accept="image/*" onchange="handleThemeImageFile(this)"></div>
+          <div class="form-group"><label>...o pegar URL</label><input type="url" id="th-image" class="fi" placeholder="https://..." oninput="document.getElementById('th-preview').src=this.value"></div>
+          <div class="form-group"><label>Vista previa <span style="font-weight:400;color:var(--text-3);">— así se ve encima de un avatar real</span></label>
+            <div style="width:100px;height:100px;position:relative;">
+              <div style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#5865f2,#7c3aed);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" opacity=".85"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+              </div>
+              <img id="th-preview" src="" style="width:134%;height:134%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);object-fit:contain;display:none;pointer-events:none;" onerror="this.style.display='none'" onload="this.style.display='block'">
+              <div id="th-preview-tag" style="position:absolute;top:2px;left:-4px;font-size:.55rem;font-weight:800;padding:2px 6px;border-radius:20px;white-space:nowrap;display:none;z-index:3;"></div>
+            </div>
+          </div>
+        </div>
+        <div id="th-fields-nameplate" style="display:none;">
+          <div class="form-group"><label>Colores del degradé</label>
+            <div style="display:flex;gap:10px;">
+              <input type="color" id="th-color1" value="#ff512f" style="width:56px;height:38px;padding:2px;">
+              <input type="color" id="th-color2" value="#dd2476" style="width:56px;height:38px;padding:2px;">
+            </div>
+          </div>
+        </div>
+        <div id="th-fields-effect" style="display:none;">
+          <div class="form-group"><label>Tipo de efecto</label>
+            <select id="th-effect-mode" class="fi" onchange="renderThemeFormFields()">
+              <option value="color">Brillo de color (simple)</option>
+              <option value="image">Imagen o GIF animado</option>
+            </select>
+          </div>
+          <div id="th-effect-fields-color">
+            <div class="form-group"><label>Color del brillo</label><input type="color" id="th-effect-color" value="#7c3aed" style="width:56px;height:38px;padding:2px;"></div>
+          </div>
+          <div id="th-effect-fields-image" style="display:none;">
+            <div class="form-group"><label>Imagen/GIF — subir archivo</label><input type="file" id="th-effect-image-file" class="fi" accept="image/*" onchange="handleThemeEffectImageFile(this)"></div>
+            <div class="form-group"><label>...o pegar URL</label><input type="url" id="th-effect-image" class="fi" placeholder="https://..." oninput="document.getElementById('th-effect-preview').src=this.value"></div>
+            <div class="form-group"><label>Vista previa</label>
+              <div style="width:88px;height:88px;border-radius:50%;background:var(--bg-3);overflow:hidden;">
+                <img id="th-effect-preview" src="" style="width:100%;height:100%;object-fit:cover;display:none;" onerror="this.style.display='none'" onload="this.style.display='block'">
+              </div>
+            </div>
           </div>
         </div>
         <div class="form-actions">
@@ -2595,14 +2646,74 @@ function loadThemesAdmin(){
     renderThemesAdmin(Object.values(data));
   });
 }
+function renderThemeFormFields(){
+  const type=document.getElementById('th-type').value;
+  document.getElementById('th-fields-avatarFrame').style.display=type==='avatarFrame'?'':'none';
+  document.getElementById('th-fields-nameplate').style.display=type==='nameplate'?'':'none';
+  document.getElementById('th-fields-effect').style.display=type==='effect'?'':'none';
+  if(type==='effect'){
+    const mode=document.getElementById('th-effect-mode').value;
+    document.getElementById('th-effect-fields-color').style.display=mode==='color'?'':'none';
+    document.getElementById('th-effect-fields-image').style.display=mode==='image'?'':'none';
+  }
+  updateThemePreview();
+}
+function handleThemeImageFile(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    document.getElementById('th-image').value=e.target.result;
+    document.getElementById('th-preview').src=e.target.result;
+    updateThemePreview();
+  };
+  reader.readAsDataURL(file);
+}
+function handleThemeEffectImageFile(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    document.getElementById('th-effect-image').value=e.target.result;
+    document.getElementById('th-effect-preview').src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+// Actualiza la "pegatina" (tag) que se ve sobre la vista previa del marco de
+// avatar mientras se completa el formulario — mismo estilo que el tag
+// "SOLO CON ORBS" de la tienda de Discord.
+function updateThemePreview(){
+  const tagEl=document.getElementById('th-preview-tag');
+  if(!tagEl)return;
+  const text=document.getElementById('th-tag-text').value.trim();
+  if(text){
+    tagEl.textContent=text.toUpperCase();
+    tagEl.style.background=document.getElementById('th-tag-bg').value;
+    tagEl.style.color=document.getElementById('th-tag-color').value;
+    tagEl.style.display='block';
+  }else{
+    tagEl.style.display='none';
+  }
+}
+function themeTagHtml(t){
+  if(!t.tagText)return'';
+  return`<div style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);font-size:.55rem;font-weight:800;padding:2px 7px;border-radius:20px;white-space:nowrap;background:${t.tagBg||'#fff'};color:${t.tagColor||'#0b0b0f'};box-shadow:0 2px 6px rgba(0,0,0,.35);">${escapeHtmlCreator(t.tagText.toUpperCase())}</div>`;
+}
+function themePreviewHtml(t){
+  const tag=themeTagHtml(t);
+  if(t.type==='nameplate')return`<div style="position:relative;width:100%;height:36px;">${tag}<div style="width:100%;height:36px;border-radius:8px;background:linear-gradient(135deg,${t.color1},${t.color2});"></div></div>`;
+  if(t.type==='effect'){
+    if(t.effectImageUrl)return`<div style="position:relative;width:56px;height:56px;margin:0 auto;">${tag}<div style="width:56px;height:56px;border-radius:50%;overflow:hidden;background:var(--bg-3);"><img src="${t.effectImageUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'"></div></div>`;
+    return`<div style="position:relative;width:56px;height:56px;margin:0 auto;">${tag}<div style="width:56px;height:56px;border-radius:50%;background:var(--bg-3);box-shadow:0 0 18px ${t.color};"></div></div>`;
+  }
+  return`<div style="position:relative;width:80px;height:80px;margin:0 auto;">${tag}<div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#5865f2,#7c3aed);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"></div><img src="${t.imageUrl}" style="width:70px;height:70px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);object-fit:contain;" onerror="this.style.display='none'"></div>`;
+}
+const THEME_TYPE_LABEL={avatarFrame:'Marco de avatar',nameplate:'Placa de nombre',effect:'Efecto de perfil'};
 function renderThemesAdmin(items){
   const grid=document.getElementById('themes-admin-grid');if(!grid)return;
   if(!items.length){grid.innerHTML='<div style="color:var(--text-3);font-size:.85rem;padding:20px;">Todavía no hay decoraciones cargadas.</div>';return;}
   grid.innerHTML=items.map(t=>`<div class="type-card" style="cursor:default;text-align:center;">
-    <div style="width:64px;height:64px;margin:0 auto 8px;border-radius:50%;background:var(--bg-3);display:flex;align-items:center;justify-content:center;overflow:hidden;">
-      <img src="${t.imageUrl}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none'">
-    </div>
+    <div style="margin-bottom:8px;">${themePreviewHtml(t)}</div>
     <h3>${escapeHtmlCreator(t.label)}</h3>
+    <p style="font-size:.7rem;color:var(--text-3);">${THEME_TYPE_LABEL[t.type]||t.type}${t.category?' · '+escapeHtmlCreator(t.category):''}</p>
     <div style="display:flex;gap:6px;justify-content:center;margin-top:8px;">
       <button class="btn btn-ghost btn-sm" onclick="editThemeAdmin('${t.id}')">Editar</button>
       <button class="btn btn-danger btn-sm" onclick="deleteThemeAdmin('${t.id}')">Eliminar</button>
@@ -2612,9 +2723,23 @@ function renderThemesAdmin(items){
 function escapeHtmlCreator(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function resetThemeForm(){
   editingThemeId=null;
+  document.getElementById('th-type').value='avatarFrame';
   document.getElementById('th-label').value='';
+  document.getElementById('th-category').value='';
+  document.getElementById('th-tag-text').value='';
+  document.getElementById('th-tag-bg').value='#ffffff';
+  document.getElementById('th-tag-color').value='#0b0b0f';
   document.getElementById('th-image').value='';
+  document.getElementById('th-image-file').value='';
   document.getElementById('th-preview').src='';document.getElementById('th-preview').style.display='none';
+  document.getElementById('th-color1').value='#ff512f';
+  document.getElementById('th-color2').value='#dd2476';
+  document.getElementById('th-effect-mode').value='color';
+  document.getElementById('th-effect-color').value='#7c3aed';
+  document.getElementById('th-effect-image').value='';
+  document.getElementById('th-effect-image-file').value='';
+  document.getElementById('th-effect-preview').src='';document.getElementById('th-effect-preview').style.display='none';
+  renderThemeFormFields();
   document.getElementById('theme-form-title').textContent='Nueva decoración';
   document.getElementById('theme-cancel-btn').style.display='none';
 }
@@ -2622,18 +2747,50 @@ async function editThemeAdmin(id){
   const snap=await fbGetSnap('catalog/avatarDecorations/'+id);
   const t=snap&&snap.exists()?snap.val():null;if(!t)return;
   editingThemeId=id;
+  document.getElementById('th-type').value=t.type||'avatarFrame';
   document.getElementById('th-label').value=t.label||'';
+  document.getElementById('th-category').value=t.category||'';
+  document.getElementById('th-tag-text').value=t.tagText||'';
+  document.getElementById('th-tag-bg').value=t.tagBg||'#ffffff';
+  document.getElementById('th-tag-color').value=t.tagColor||'#0b0b0f';
   document.getElementById('th-image').value=t.imageUrl||'';
   document.getElementById('th-preview').src=t.imageUrl||'';document.getElementById('th-preview').style.display=t.imageUrl?'block':'none';
+  document.getElementById('th-color1').value=t.color1||'#ff512f';
+  document.getElementById('th-color2').value=t.color2||'#dd2476';
+  document.getElementById('th-effect-mode').value=t.effectImageUrl?'image':'color';
+  document.getElementById('th-effect-color').value=t.color||'#7c3aed';
+  document.getElementById('th-effect-image').value=t.effectImageUrl||'';
+  document.getElementById('th-effect-preview').src=t.effectImageUrl||'';document.getElementById('th-effect-preview').style.display=t.effectImageUrl?'block':'none';
+  renderThemeFormFields();
   document.getElementById('theme-form-title').textContent='Editar decoración';
   document.getElementById('theme-cancel-btn').style.display='';
 }
 async function saveThemeAdmin(){
+  const type=document.getElementById('th-type').value;
   const label=document.getElementById('th-label').value.trim();
-  const imageUrl=document.getElementById('th-image').value.trim();
-  if(!label||!imageUrl){showToast('⚠️ Completa nombre e imagen');return;}
+  const category=document.getElementById('th-category').value.trim();
+  const tagText=document.getElementById('th-tag-text').value.trim();
+  if(!label){showToast('⚠️ Completa el nombre');return;}
   const id=editingThemeId||('deco_'+label.toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+genId(5));
-  await fbSet('catalog/avatarDecorations/'+id,{id,label,imageUrl});
+  const t={id,label,type,category};
+  if(tagText){t.tagText=tagText;t.tagBg=document.getElementById('th-tag-bg').value;t.tagColor=document.getElementById('th-tag-color').value;}
+  if(type==='avatarFrame'){
+    t.imageUrl=document.getElementById('th-image').value.trim();
+    if(!t.imageUrl){showToast('⚠️ Sube un archivo o pega una URL de imagen');return;}
+  }else if(type==='nameplate'){
+    t.color1=document.getElementById('th-color1').value;
+    t.color2=document.getElementById('th-color2').value;
+  }else if(type==='effect'){
+    const mode=document.getElementById('th-effect-mode').value;
+    if(mode==='image'){
+      t.effectImageUrl=document.getElementById('th-effect-image').value.trim();
+      if(!t.effectImageUrl){showToast('⚠️ Sube un archivo o pega una URL de imagen/GIF');return;}
+      t.color=document.getElementById('th-effect-color').value;
+    }else{
+      t.color=document.getElementById('th-effect-color').value;
+    }
+  }
+  await fbSet('catalog/avatarDecorations/'+id,t);
   showToast('✅ Decoración guardada');
   resetThemeForm();
 }
