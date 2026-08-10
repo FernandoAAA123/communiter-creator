@@ -1033,6 +1033,18 @@ ctx.setPresence('');
         </div>
         <div class="form-group"><label>Nombre *</label><input type="text" id="th-label" class="fi" placeholder="Aries"></div>
         <div class="form-group"><label>Categoría (opcional)</label><input type="text" id="th-category" class="fi" placeholder="Temporada, evento, básico..."></div>
+        <div class="form-group" style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;">
+          <div>
+            <label style="margin:0;">Publicado</label>
+            <div style="font-size:.72rem;color:var(--text-3);">Mientras esté en borrador, solo vos la ves acá — no aparece para los usuarios.</div>
+          </div>
+          <label style="position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0;">
+            <input type="checkbox" id="th-published" style="opacity:0;width:0;height:0;" onchange="document.getElementById('th-published-slider').style.background=this.checked?'var(--accent)':'var(--bg-4,#555)';document.getElementById('th-published-slider').querySelector('span').style.transform=this.checked?'translateX(18px)':'translateX(0)';">
+            <span id="th-published-slider" style="position:absolute;inset:0;background:var(--bg-4,#555);border-radius:24px;transition:.15s;cursor:pointer;" onclick="document.getElementById('th-published').checked=!document.getElementById('th-published').checked;document.getElementById('th-published').dispatchEvent(new Event('change'));">
+              <span style="position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s;display:block;"></span>
+            </span>
+          </label>
+        </div>
         <div class="form-group">
           <label>Pegatina (opcional) <span style="font-weight:400;color:var(--text-3);">— insignia tipo "SOLO CON ORBS"</span></label>
           <div style="display:flex;gap:10px;align-items:center;">
@@ -1044,7 +1056,15 @@ ctx.setPresence('');
         <div id="th-fields-avatarFrame">
           <div class="form-group"><label>Imagen — subir archivo</label><input type="file" id="th-image-file" class="fi" accept="image/*" onchange="handleThemeImageFile(this)"></div>
           <div class="form-group"><label>...o pegar URL</label><input type="url" id="th-image" class="fi" placeholder="https://..." oninput="document.getElementById('th-preview').src=this.value"></div>
-          <div class="form-group"><label>Vista previa <span style="font-weight:400;color:var(--text-3);">— así se ve encima de un avatar real</span></label>
+          <div class="form-group">
+            <label>Escala <span id="th-scale-val" style="font-weight:400;color:var(--text-3);">134%</span></label>
+            <input type="range" id="th-scale" min="80" max="250" value="134" step="1" style="width:100%;" oninput="document.getElementById('th-scale-val').textContent=this.value+'%';updateThemeFramePreview()">
+          </div>
+          <div class="form-group">
+            <label>Desplazamiento vertical <span id="th-offsety-val" style="font-weight:400;color:var(--text-3);">0px</span></label>
+            <input type="range" id="th-offsety" min="-30" max="30" value="0" step="1" style="width:100%;" oninput="document.getElementById('th-offsety-val').textContent=this.value+'px';updateThemeFramePreview()">
+          </div>
+          <div class="form-group"><label>Vista previa <span style="font-weight:400;color:var(--text-3);">— así se ve encima de un avatar real. Ajustá la escala hasta que el hueco calce con el círculo.</span></label>
             <div style="width:100px;height:100px;position:relative;">
               <div style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#5865f2,#7c3aed);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;overflow:hidden;">
                 <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" opacity=".85"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
@@ -1087,7 +1107,16 @@ ctx.setPresence('');
           <button class="btn btn-ghost" id="theme-cancel-btn" style="display:none;" onclick="resetThemeForm()">Cancelar edición</button>
         </div>
       </div>
-      <div class="type-grid" id="themes-admin-grid" style="margin-top:20px;"></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:24px;flex-wrap:wrap;">
+        <input type="text" id="themes-search" class="fi" placeholder="Buscar por nombre o categoría..." style="flex:1;min-width:200px;" oninput="renderThemesAdminFiltered()">
+        <div style="display:flex;gap:4px;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-sm);padding:3px;">
+          <button class="btn btn-sm theme-filter-btn" data-filter="all" onclick="setThemesFilter('all')">Todas</button>
+          <button class="btn btn-sm theme-filter-btn" data-filter="published" onclick="setThemesFilter('published')">Publicadas</button>
+          <button class="btn btn-sm theme-filter-btn" data-filter="draft" onclick="setThemesFilter('draft')">Borradores</button>
+        </div>
+      </div>
+      <div id="themes-admin-count" style="font-size:.72rem;color:var(--text-3);margin-top:8px;"></div>
+      <div class="type-grid" id="themes-admin-grid" style="margin-top:10px;"></div>
     </div>
 
     <!-- ══════════════════════════════════════════
@@ -2640,11 +2669,39 @@ async function deleteDexBotAdmin(id){
 
 // ── SERVERS ──
 let editingThemeId=null;
+let _themesAllItems=[];
+let _themesFilter='all';
 function loadThemesAdmin(){
   fbOn('catalog/avatarDecorations',snap=>{
     const data=snap.val()||{};
-    renderThemesAdmin(Object.values(data));
+    _themesAllItems=Object.values(data);
+    renderThemesAdminFiltered();
   });
+}
+function setThemesFilter(f){
+  _themesFilter=f;
+  document.querySelectorAll('.theme-filter-btn').forEach(b=>{
+    const active=b.dataset.filter===f;
+    b.style.background=active?'var(--accent)':'transparent';
+    b.style.color=active?'#fff':'var(--text-2)';
+  });
+  renderThemesAdminFiltered();
+}
+// Buscador + filtro Publicadas/Borradores sobre la lista completa que ya
+// tenemos en memoria (_themesAllItems) — no vuelve a pedir nada a Firebase,
+// solo recalcula qué mostrar.
+function renderThemesAdminFiltered(){
+  const q=(document.getElementById('themes-search')?.value||'').trim().toLowerCase();
+  let items=_themesAllItems;
+  if(_themesFilter==='published')items=items.filter(t=>t.published!==false);
+  else if(_themesFilter==='draft')items=items.filter(t=>t.published===false);
+  if(q)items=items.filter(t=>(t.label||'').toLowerCase().includes(q)||(t.category||'').toLowerCase().includes(q));
+  const countEl=document.getElementById('themes-admin-count');
+  if(countEl){
+    const totalDraft=_themesAllItems.filter(t=>t.published===false).length;
+    countEl.textContent=`${items.length} de ${_themesAllItems.length} decoraciones${totalDraft?` · ${totalDraft} en borrador`:''}`;
+  }
+  renderThemesAdmin(items);
 }
 function renderThemeFormFields(){
   const type=document.getElementById('th-type').value;
@@ -2692,6 +2749,20 @@ function updateThemePreview(){
   }else{
     tagEl.style.display='none';
   }
+  updateThemeFramePreview();
+}
+// Aplica escala + desplazamiento vertical del marco de avatar a la vista previa
+// en vivo del formulario — mismos valores que después se guardan y se usan en
+// la app real, así lo que ves acá es lo que va a quedar.
+function updateThemeFramePreview(){
+  const img=document.getElementById('th-preview');
+  const scaleEl=document.getElementById('th-scale'),offEl=document.getElementById('th-offsety');
+  if(!img||!scaleEl||!offEl)return;
+  const scale=parseInt(scaleEl.value,10)||134;
+  const offY=parseInt(offEl.value,10)||0;
+  img.style.width=scale+'%';
+  img.style.height=scale+'%';
+  img.style.transform=`translate(-50%,calc(-50% + ${offY}px))`;
 }
 function themeTagHtml(t){
   if(!t.tagText)return'';
@@ -2704,21 +2775,39 @@ function themePreviewHtml(t){
     if(t.effectImageUrl)return`<div style="position:relative;width:56px;height:56px;margin:0 auto;">${tag}<div style="width:56px;height:56px;border-radius:50%;overflow:hidden;background:var(--bg-3);"><img src="${t.effectImageUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'"></div></div>`;
     return`<div style="position:relative;width:56px;height:56px;margin:0 auto;">${tag}<div style="width:56px;height:56px;border-radius:50%;background:var(--bg-3);box-shadow:0 0 18px ${t.color};"></div></div>`;
   }
-  return`<div style="position:relative;width:80px;height:80px;margin:0 auto;">${tag}<div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#5865f2,#7c3aed);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"></div><img src="${t.imageUrl}" style="width:70px;height:70px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);object-fit:contain;" onerror="this.style.display='none'"></div>`;
+  return`<div style="position:relative;width:80px;height:80px;margin:0 auto;">${tag}<div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#5865f2,#7c3aed);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);overflow:hidden;"></div><img src="${t.imageUrl}" style="width:${(t.scale||134)*0.52}px;height:${(t.scale||134)*0.52}px;position:absolute;top:50%;left:50%;transform:translate(-50%,calc(-50% + ${((t.offsetY||0)*0.52)}px));object-fit:contain;" onerror="this.style.display='none'"></div>`;
 }
 const THEME_TYPE_LABEL={avatarFrame:'Marco de avatar',nameplate:'Placa de nombre',effect:'Efecto de perfil'};
 function renderThemesAdmin(items){
   const grid=document.getElementById('themes-admin-grid');if(!grid)return;
-  if(!items.length){grid.innerHTML='<div style="color:var(--text-3);font-size:.85rem;padding:20px;">Todavía no hay decoraciones cargadas.</div>';return;}
-  grid.innerHTML=items.map(t=>`<div class="type-card" style="cursor:default;text-align:center;">
+  if(!items.length){grid.innerHTML='<div style="color:var(--text-3);font-size:.85rem;padding:20px;">No hay decoraciones que coincidan.</div>';return;}
+  grid.innerHTML=items.map(t=>{
+    const isPublished=t.published!==false;
+    return`<div class="type-card" style="cursor:default;text-align:center;position:relative;">
+    <div style="position:absolute;top:8px;right:8px;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:20px;background:${isPublished?'rgba(59,201,120,.15)':'rgba(250,168,26,.18)'};color:${isPublished?'var(--green,#3bc978)':'var(--yellow,#faa81a)'};">${isPublished?'PUBLICADA':'BORRADOR'}</div>
     <div style="margin-bottom:8px;">${themePreviewHtml(t)}</div>
     <h3>${escapeHtmlCreator(t.label)}</h3>
     <p style="font-size:.7rem;color:var(--text-3);">${THEME_TYPE_LABEL[t.type]||t.type}${t.category?' · '+escapeHtmlCreator(t.category):''}</p>
-    <div style="display:flex;gap:6px;justify-content:center;margin-top:8px;">
+    <div style="display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap;">
       <button class="btn btn-ghost btn-sm" onclick="editThemeAdmin('${t.id}')">Editar</button>
+      <button class="btn btn-ghost btn-sm" onclick="duplicateThemeAdmin('${t.id}')" title="Duplicar como borrador nuevo">Duplicar</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleThemePublish('${t.id}',${!isPublished})">${isPublished?'Despublicar':'Publicar'}</button>
       <button class="btn btn-danger btn-sm" onclick="deleteThemeAdmin('${t.id}')">Eliminar</button>
     </div>
-  </div>`).join('');
+  </div>`;
+  }).join('');
+}
+async function toggleThemePublish(id,publish){
+  await fbSet('catalog/avatarDecorations/'+id+'/published',publish);
+  showToast(publish?'✅ Decoración publicada':'📝 Pasada a borrador');
+}
+async function duplicateThemeAdmin(id){
+  const snap=await fbGetSnap('catalog/avatarDecorations/'+id);
+  const t=snap&&snap.exists()?snap.val():null;if(!t)return;
+  const newId='deco_'+(t.label||'copia').toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+genId(5);
+  const copy={...t,id:newId,label:(t.label||'')+' (copia)',published:false};
+  await fbSet('catalog/avatarDecorations/'+newId,copy);
+  showToast('✅ Duplicada como borrador — editala y publicala cuando esté lista');
 }
 function escapeHtmlCreator(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function resetThemeForm(){
@@ -2732,6 +2821,10 @@ function resetThemeForm(){
   document.getElementById('th-image').value='';
   document.getElementById('th-image-file').value='';
   document.getElementById('th-preview').src='';document.getElementById('th-preview').style.display='none';
+  document.getElementById('th-scale').value='134';document.getElementById('th-scale-val').textContent='134%';
+  document.getElementById('th-offsety').value='0';document.getElementById('th-offsety-val').textContent='0px';
+  document.getElementById('th-preview').style.width='134%';document.getElementById('th-preview').style.height='134%';
+  document.getElementById('th-preview').style.transform='translate(-50%,-50%)';
   document.getElementById('th-color1').value='#ff512f';
   document.getElementById('th-color2').value='#dd2476';
   document.getElementById('th-effect-mode').value='color';
@@ -2739,6 +2832,9 @@ function resetThemeForm(){
   document.getElementById('th-effect-image').value='';
   document.getElementById('th-effect-image-file').value='';
   document.getElementById('th-effect-preview').src='';document.getElementById('th-effect-preview').style.display='none';
+  document.getElementById('th-published').checked=false;
+  document.getElementById('th-published-slider').style.background='var(--bg-4,#555)';
+  document.getElementById('th-published-slider').querySelector('span').style.transform='translateX(0)';
   renderThemeFormFields();
   document.getElementById('theme-form-title').textContent='Nueva decoración';
   document.getElementById('theme-cancel-btn').style.display='none';
@@ -2755,12 +2851,19 @@ async function editThemeAdmin(id){
   document.getElementById('th-tag-color').value=t.tagColor||'#0b0b0f';
   document.getElementById('th-image').value=t.imageUrl||'';
   document.getElementById('th-preview').src=t.imageUrl||'';document.getElementById('th-preview').style.display=t.imageUrl?'block':'none';
+  document.getElementById('th-scale').value=t.scale||134;document.getElementById('th-scale-val').textContent=(t.scale||134)+'%';
+  document.getElementById('th-offsety').value=t.offsetY||0;document.getElementById('th-offsety-val').textContent=(t.offsetY||0)+'px';
+  updateThemeFramePreview();
   document.getElementById('th-color1').value=t.color1||'#ff512f';
   document.getElementById('th-color2').value=t.color2||'#dd2476';
   document.getElementById('th-effect-mode').value=t.effectImageUrl?'image':'color';
   document.getElementById('th-effect-color').value=t.color||'#7c3aed';
   document.getElementById('th-effect-image').value=t.effectImageUrl||'';
   document.getElementById('th-effect-preview').src=t.effectImageUrl||'';document.getElementById('th-effect-preview').style.display=t.effectImageUrl?'block':'none';
+  const isPub=t.published!==false;
+  document.getElementById('th-published').checked=isPub;
+  document.getElementById('th-published-slider').style.background=isPub?'var(--accent)':'var(--bg-4,#555)';
+  document.getElementById('th-published-slider').querySelector('span').style.transform=isPub?'translateX(18px)':'translateX(0)';
   renderThemeFormFields();
   document.getElementById('theme-form-title').textContent='Editar decoración';
   document.getElementById('theme-cancel-btn').style.display='';
@@ -2772,11 +2875,13 @@ async function saveThemeAdmin(){
   const tagText=document.getElementById('th-tag-text').value.trim();
   if(!label){showToast('⚠️ Completa el nombre');return;}
   const id=editingThemeId||('deco_'+label.toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+genId(5));
-  const t={id,label,type,category};
+  const t={id,label,type,category,published:document.getElementById('th-published').checked};
   if(tagText){t.tagText=tagText;t.tagBg=document.getElementById('th-tag-bg').value;t.tagColor=document.getElementById('th-tag-color').value;}
   if(type==='avatarFrame'){
     t.imageUrl=document.getElementById('th-image').value.trim();
     if(!t.imageUrl){showToast('⚠️ Sube un archivo o pega una URL de imagen');return;}
+    t.scale=parseInt(document.getElementById('th-scale').value,10)||134;
+    t.offsetY=parseInt(document.getElementById('th-offsety').value,10)||0;
   }else if(type==='nameplate'){
     t.color1=document.getElementById('th-color1').value;
     t.color2=document.getElementById('th-color2').value;
